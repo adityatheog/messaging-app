@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: messaging-app-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_12345
+      - NODE_ENV=production
+    volumes:
+      - ./backend/data:/app/data
+    restart: unless-stopped
+    networks:
+      - messaging-network
+
+  frontend:
+    build: ./frontend
+    container_name: messaging-app-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000/api
+    restart: unless-stopped
+    networks:
+      - messaging-network
+
+networks:
+  messaging-network:
+    driver: bridge
+
+volumes:
+  backend-data:
