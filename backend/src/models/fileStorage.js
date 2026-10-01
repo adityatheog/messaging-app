@@ -1,27 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-/**
- * JSON-file storage.
- *
- * Guarantees provided here (the previous version provided none of them):
- *  - All writes are serialized through a single in-process lock, so
- *    read-modify-write sequences (create user, append message, set online)
- *    cannot overwrite each other.
- *  - Writes are atomic (temp file + fsync + rename): a reader never sees a
- *    half-written file and a crash cannot truncate users.json.
- *  - A read error is an ERROR. It is never silently turned into "empty
- *    database" (which the next write would then persist, wiping all data).
- *
- * Limits: this is still a single-process file store. Do not run more than one
- * backend instance against the same data directory.
- */
-
-// Resolved lazily so DATA_DIR from .env (loaded by server.js) is honoured.
-const getDataDir = () =>
-  process.env.DATA_DIR
-    ? path.resolve(process.env.DATA_DIR)
-    : path.join(__dirname, '../../data');
+const getDataDir = () => process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(__dirname, '../../data');
 const usersFile = () => path.join(getDataDir(), 'users.json');
 const messagesFile = () => path.join(getDataDir(), 'messages.json');
 
@@ -40,211 +20,191 @@ class DuplicateUsernameError extends Error {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Low-level helpers
-// ---------------------------------------------------------------------------
+// Memory Cache & Presence map (Single Node.js Process Only)
+let memUsers = null;
+let memMessages = null;
+const presenceMap = new Map();
+const PRESENCE_TIMEOUT_MS = process.env.PRESENCE_TIMEOUT_MS ? parseInt(process.env.PRESENCE_TIMEOUT_MS, 10) : 15000;
 
+// Serialized Promise lock to prevent concurrent write corruption
 let lockChain = Promise.resolve();
-
-/** Run fn exclusively; later callers wait for earlier ones (success or failure). */
 const withLock = (fn) => {
   const result = lockChain.then(() => fn());
-  lockChain = result.catch(() => {});
+  lockChain = result.catch(() => {}); // Prevent a single failure from breaking the queue
   return result;
 };
 
-/**
- * Read and parse a JSON array file.
- * - Missing file (ENOENT)  -> [] (nothing was ever stored)
- * - Anything else wrong    -> throws StorageError (never pretends the DB is empty)
- */
 const readJsonArray = async (filePath) => {
-  let raw;
   try {
-    raw = await fs.readFile(filePath, 'utf8');
+    const raw = await fs.readFile(filePath, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) throw new StorageError(`${filePath} does not contain a JSON array`);
+    return parsed;
   } catch (error) {
     if (error.code === 'ENOENT') return [];
     throw new StorageError(`Cannot read ${filePath}: ${error.message}`, error);
   }
-
-  let parsed;
-  try {
-    parsed = JSON.parse(raw);
-  } catch (error) {
-    throw new StorageError(
-      `${filePath} contains invalid JSON and was left untouched: ${error.message}`,
-      error
-    );
-  }
-
-  if (!Array.isArray(parsed)) {
-    throw new StorageError(`${filePath} does not contain a JSON array and was left untouched`);
-  }
-  return parsed;
 };
 
-/** Atomically replace filePath with data. Caller must hold the lock. */
+/** 
+ * Atomically replaces the file. 
+ * Uses compact JSON.stringify to reduce CPU/memory overhead.
+ */
 const writeJsonAtomic = async (filePath, data) => {
   const tmpPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
   try {
     const handle = await fs.open(tmpPath, 'w');
     try {
-      await handle.writeFile(JSON.stringify(data, null, 2), 'utf8');
+      await handle.writeFile(JSON.stringify(data), 'utf8');
       await handle.sync();
     } finally {
       await handle.close();
     }
     await fs.rename(tmpPath, filePath);
   } catch (error) {
-    await fs.unlink(tmpPath).catch(() => {});
+    await fs.unlink(tmpPath).catch(() => {}); // Clean up stale temp file
     throw new StorageError(`Cannot write ${filePath}: ${error.message}`, error);
   }
 };
 
-// ---------------------------------------------------------------------------
-// Initialisation (once per process)
-// ---------------------------------------------------------------------------
-
 let initPromise = null;
-
 const doInitialize = async () => {
   const dir = getDataDir();
-  try {
-    await fs.mkdir(dir, { recursive: true });
-    await fs.access(dir, require('fs').constants.W_OK);
-  } catch (error) {
-    throw new StorageError(`Data directory ${dir} is not usable: ${error.message}`, error);
-  }
+  await fs.mkdir(dir, { recursive: true });
+  await fs.access(dir, require('fs').constants.W_OK);
 
-  for (const file of [usersFile(), messagesFile()]) {
-    try {
-      // 'wx' = create only if it does not exist; never overwrites existing data.
-      await fs.writeFile(file, '[]', { flag: 'wx' });
-    } catch (error) {
-      if (error.code !== 'EEXIST') {
-        throw new StorageError(`Cannot create ${file}: ${error.message}`, error);
-      }
-    }
-    // Fail fast at startup if an existing file is corrupt.
-    await readJsonArray(file);
-  }
+  memUsers = await readJsonArray(usersFile());
+  memMessages = await readJsonArray(messagesFile());
+
+  // Ensure files exist safely without overwriting data
+  try { await fs.writeFile(usersFile(), '[]', { flag: 'wx' }); } catch (e) {}
+  try { await fs.writeFile(messagesFile(), '[]', { flag: 'wx' }); } catch (e) {}
 };
 
-/** Ensure data directory and files exist and are readable. Safe to call repeatedly. */
 const initializeStorage = () => {
   if (!initPromise) {
-    initPromise = doInitialize().catch((error) => {
-      initPromise = null; // allow a retry on the next call
-      throw error;
+    initPromise = doInitialize().catch((err) => {
+      initPromise = null;
+      throw err;
     });
   }
   return initPromise;
 };
 
-// ---------------------------------------------------------------------------
-// Users
-// ---------------------------------------------------------------------------
-
 const normalizeUsername = (username) => String(username == null ? '' : username).trim().toLowerCase();
 
-const getUsers = async () => {
-  await initializeStorage();
-  return readJsonArray(usersFile());
+// --- Presence Logic ---
+const updatePresence = (userId) => presenceMap.set(userId, Date.now());
+const clearPresence = (userId) => presenceMap.delete(userId);
+const isOnline = (userId) => {
+  const lastActive = presenceMap.get(userId);
+  if (!lastActive) return false;
+  return (Date.now() - lastActive) < PRESENCE_TIMEOUT_MS;
 };
 
-const saveUsers = (users) =>
-  withLock(async () => {
-    await initializeStorage();
-    await writeJsonAtomic(usersFile(), users);
-  });
+// --- User Logic ---
+const getUsers = async () => {
+  await initializeStorage();
+  return memUsers.map(u => ({ ...u, isOnline: isOnline(u.id) }));
+};
 
-/** Exact match wins (keeps pre-existing case-variant accounts reachable), then case-insensitive. */
 const findUserByUsername = async (username) => {
-  const users = await getUsers();
-  const exact = users.find((u) => u.username === username);
-  if (exact) return exact;
+  await initializeStorage();
+  const exact = memUsers.find((u) => u.username === username);
+  if (exact) return { ...exact, isOnline: isOnline(exact.id) };
+  
   const needle = normalizeUsername(username);
-  return users.find((u) => normalizeUsername(u.username) === needle);
+  const user = memUsers.find((u) => normalizeUsername(u.username) === needle);
+  return user ? { ...user, isOnline: isOnline(user.id) } : undefined;
 };
 
 const findUserById = async (id) => {
-  const users = await getUsers();
-  return users.find((u) => u.id === id);
+  await initializeStorage();
+  const user = memUsers.find((u) => u.id === id);
+  return user ? { ...user, isOnline: isOnline(user.id) } : undefined;
 };
 
-/** Atomic "check duplicate + insert". Throws DuplicateUsernameError. */
 const createUser = (userData) =>
   withLock(async () => {
     await initializeStorage();
-    const users = await readJsonArray(usersFile());
     const needle = normalizeUsername(userData.username);
-    if (users.some((u) => normalizeUsername(u.username) === needle)) {
+    if (memUsers.some((u) => normalizeUsername(u.username) === needle)) {
       throw new DuplicateUsernameError(userData.username);
     }
-    users.push(userData);
-    await writeJsonAtomic(usersFile(), users);
-    return userData;
+    
+    // 1. Calculate next state
+    const userToSave = { ...userData };
+    delete userToSave.isOnline; // Clean up legacy boolean if passed
+    const nextUsers = [...memUsers, userToSave];
+    
+    // 2. Persist to disk
+    await writeJsonAtomic(usersFile(), nextUsers);
+    
+    // 3. Commit to memory cache ONLY if disk write succeeds
+    memUsers = nextUsers;
+    updatePresence(userData.id);
+    
+    return { ...userToSave, isOnline: true };
   });
 
-/** Set isOnline for a user. Returns the updated user, or null if the user does not exist. */
-const setUserOnline = (id, isOnline) =>
-  withLock(async () => {
-    await initializeStorage();
-    const users = await readJsonArray(usersFile());
-    const user = users.find((u) => u.id === id);
-    if (!user) return null;
-    user.isOnline = Boolean(isOnline);
-    await writeJsonAtomic(usersFile(), users);
-    return user;
-  });
-
-// ---------------------------------------------------------------------------
-// Messages
-// ---------------------------------------------------------------------------
-
-const getMessages = async () => {
+// --- Message Logic ---
+const getMessagesBetweenUsers = async (userId1, userId2) => {
   await initializeStorage();
-  return readJsonArray(messagesFile());
+  return memMessages
+    .filter(m => (m.senderId === userId1 && m.receiverId === userId2) || (m.senderId === userId2 && m.receiverId === userId1))
+    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 };
-
-const saveMessages = (messages) =>
-  withLock(async () => {
-    await initializeStorage();
-    await writeJsonAtomic(messagesFile(), messages);
-  });
 
 const createMessage = (messageData) =>
   withLock(async () => {
     await initializeStorage();
-    const messages = await readJsonArray(messagesFile());
-    messages.push(messageData);
-    await writeJsonAtomic(messagesFile(), messages);
+    
+    // 1. Calculate next state
+    const nextMessages = [...memMessages, messageData];
+    
+    // 2. Persist to disk
+    await writeJsonAtomic(messagesFile(), nextMessages);
+    
+    // 3. Commit to memory cache
+    memMessages = nextMessages;
+    
     return messageData;
   });
 
-const getMessagesBetweenUsers = async (userId1, userId2) => {
-  const messages = await getMessages();
-  return messages
-    .filter(
-      (m) =>
-        (m.senderId === userId1 && m.receiverId === userId2) ||
-        (m.senderId === userId2 && m.receiverId === userId1)
-    )
-    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-};
+const markMessagesAsRead = (senderId, receiverId) =>
+  withLock(async () => {
+    await initializeStorage();
+    let changed = false;
+    
+    // 1. Map next state (new objects created to prevent mutating cache before success)
+    const nextMessages = memMessages.map(m => {
+      if (m.senderId === senderId && m.receiverId === receiverId && !m.read) {
+        changed = true;
+        return { ...m, read: true };
+      }
+      return m;
+    });
+
+    if (changed) {
+      // 2. Persist to disk
+      await writeJsonAtomic(messagesFile(), nextMessages);
+      // 3. Commit to memory cache
+      memMessages = nextMessages;
+    }
+  });
 
 module.exports = {
   StorageError,
   DuplicateUsernameError,
   initializeStorage,
   getUsers,
-  saveUsers,
   findUserByUsername,
   findUserById,
   createUser,
-  setUserOnline,
-  getMessages,
-  saveMessages,
+  updatePresence,
+  clearPresence,
+  isOnline,
+  getMessagesBetweenUsers,
   createMessage,
-  getMessagesBetweenUsers
+  markMessagesAsRead
 };
