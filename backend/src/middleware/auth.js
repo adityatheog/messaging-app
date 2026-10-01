@@ -1,19 +1,10 @@
 const jwt = require('jsonwebtoken');
 const { getJwtSecret } = require('../config/env');
-const { findUserById } = require('../models/fileStorage');
+const { findUserById, updatePresence } = require('../models/fileStorage');
 
-/**
- * Middleware to verify the JWT and authenticate the request.
- *
- * Besides checking the signature/expiry it confirms the account still exists
- * (a token outlives a wiped or reset data store) and attaches the CURRENT,
- * password-free user record as req.user. Identity always comes from here,
- * never from the request body.
- */
 const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'No token provided' });
     }
@@ -23,7 +14,6 @@ const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    // Pin the algorithm so the token header cannot choose it.
     const decoded = jwt.verify(token, getJwtSecret(), { algorithms: ['HS256'] });
 
     const user = await findUserById(decoded.id);
@@ -31,6 +21,10 @@ const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ error: 'Account no longer exists' });
     }
 
+    // Refresh memory presence timestamp automatically on any valid API interaction.
+    updatePresence(user.id);
+
+    // Ensure password is stripped before attaching to req
     const { password, ...safeUser } = user;
     req.user = safeUser;
 
@@ -42,7 +36,7 @@ const authMiddleware = async (req, res, next) => {
     if (error instanceof jwt.JsonWebTokenError || error.name === 'NotBeforeError') {
       return res.status(401).json({ error: 'Invalid token' });
     }
-    console.error('Authentication error:', error);
+    console.error('Authentication error:', error.message);
     return res.status(500).json({ error: 'Authentication failed' });
   }
 };
