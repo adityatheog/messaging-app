@@ -1,0 +1,47 @@
+version: '3.8'
+
+# Secrets and per-environment values come from a `.env` file next to this file
+# (copy .env.example to .env) or from the shell environment. Never commit real values.
+services:
+  backend:
+    build: ./backend
+    container_name: messaging-app-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      # Required: 32+ random characters. The backend refuses to start without it.
+      - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in .env next to docker-compose.yml (see .env.example)}
+      # Exact origin(s) the browser loads the frontend from (comma-separated)
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+      - DATA_DIR=/app/data
+    volumes:
+      # Named volume so users/messages survive container rebuilds
+      - backend-data:/app/data
+    restart: unless-stopped
+    networks:
+      - messaging-network
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Create React App inlines this at BUILD time, so it must be a build arg,
+        # not a runtime environment variable. Default /api uses the nginx proxy.
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-/api}
+    container_name: messaging-app-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - messaging-network
+
+networks:
+  messaging-network:
+    driver: bridge
+
+volumes:
+  backend-data:

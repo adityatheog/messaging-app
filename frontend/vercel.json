@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "installCommand": "npm install",
+  "framework": "create-react-app",
+  "rewrites": [
+    {
+      "source": "!(static|favicon.ico|manifest.json|asset-manifest.json|robots.txt)(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
