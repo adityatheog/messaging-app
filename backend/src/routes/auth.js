@@ -2,7 +2,8 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const rateLimit = require('express-rate-limit');
+// FIXED: Use named export for express-rate-limit v7+
+const { rateLimit } = require('express-rate-limit'); 
 const authMiddleware = require('../middleware/auth');
 const { getJwtSecret } = require('../config/env');
 const {
