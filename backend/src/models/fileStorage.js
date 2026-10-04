@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
+const crypto = require('crypto'); // FIXED: imported for atomic file temp naming
 
 const getDataDir = () => process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(__dirname, '../../data');
 const usersFile = () => path.join(getDataDir(), 'users.json');
@@ -51,7 +52,10 @@ const readJsonArray = async (filePath) => {
  * Uses compact JSON.stringify to reduce CPU/memory overhead.
  */
 const writeJsonAtomic = async (filePath, data) => {
-  const tmpPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+  // FIXED: mathematically eliminate tmp file collision during sub-millisecond writes
+  const rand = crypto.randomBytes(4).toString('hex');
+  const tmpPath = `${filePath}.${process.pid}.${Date.now()}.${rand}.tmp`;
+  
   try {
     const handle = await fs.open(tmpPath, 'w');
     try {
@@ -73,12 +77,19 @@ const doInitialize = async () => {
   await fs.mkdir(dir, { recursive: true });
   await fs.access(dir, require('fs').constants.W_OK);
 
+  // FIXED: Only catch EEXIST. Let genuine permission failures throw loudly so the server can report the issue.
+  for (const file of [usersFile(), messagesFile()]) {
+    try {
+      await fs.writeFile(file, '[]', { flag: 'wx' });
+    } catch (error) {
+      if (error.code !== 'EEXIST') {
+        throw new StorageError(`Cannot create ${file}: ${error.message}`, error);
+      }
+    }
+  }
+
   memUsers = await readJsonArray(usersFile());
   memMessages = await readJsonArray(messagesFile());
-
-  // Ensure files exist safely without overwriting data
-  try { await fs.writeFile(usersFile(), '[]', { flag: 'wx' }); } catch (e) {}
-  try { await fs.writeFile(messagesFile(), '[]', { flag: 'wx' }); } catch (e) {}
 };
 
 const initializeStorage = () => {
