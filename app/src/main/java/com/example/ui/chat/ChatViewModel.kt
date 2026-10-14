@@ -170,9 +170,12 @@ class ChatViewModel(private val repository: MessageRepository) : ViewModel() {
                 }
             }
 
+            val lastMessagesMap = repository.getLastMessagesForAllPeers(currentUserId)
+            val unreadCountsMap = repository.getUnreadCountsForAllPeers(currentUserId)
+
             val userItems = filteredUsers.map { user ->
-                val lastMsg = repository.getLastMessage(currentUserId, user.id)
-                val unread = repository.getUnreadCount(currentUserId, user.id)
+                val lastMsg = lastMessagesMap[user.id]
+                val unread = unreadCountsMap[user.id] ?: 0
                 UserConversationItem(user, lastMsg, unread)
             }
             _users.value = userItems

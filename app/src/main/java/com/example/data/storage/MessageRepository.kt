@@ -781,6 +781,95 @@ class MessageRepository(context: Context) {
         count
     }
 
+    suspend fun getLastMessagesForAllPeers(userId: String): Map<String, Message> = withContext(Dispatchers.IO) {
+        purgeExpiredMessages()
+        val db = dbHelper.readableDatabase
+        // Use a subquery to find the max timestamp for each peer, then join back to messages
+        val cursor = db.rawQuery(
+            """
+            SELECT m.id, m.sender_id, m.receiver_id, m.content, m.timestamp, m.is_read, m.is_delivered, m.is_group,
+                   m.reply_to_id, m.reply_to_text, m.reply_to_sender, m.message_type, m.media_url, m.media_name,
+                   m.media_size, m.audio_duration, m.reactions, m.is_edited, m.disappearing_after,
+                   CASE
+                       WHEN m.sender_id = ? THEN m.receiver_id
+                       ELSE m.sender_id
+                   END as peer_id
+            FROM messages m
+            INNER JOIN (
+                SELECT
+                    CASE
+                        WHEN sender_id = ? THEN receiver_id
+                        ELSE sender_id
+                    END as p_id,
+                    MAX(timestamp) as max_time
+                FROM messages
+                WHERE (sender_id = ? OR receiver_id = ?) AND is_group = 0
+                GROUP BY p_id
+            ) as latest
+            ON (CASE WHEN m.sender_id = ? THEN m.receiver_id ELSE m.sender_id END) = latest.p_id
+               AND m.timestamp = latest.max_time
+            WHERE (m.sender_id = ? OR m.receiver_id = ?) AND m.is_group = 0
+            """.trimIndent(),
+            arrayOf(userId, userId, userId, userId, userId, userId, userId)
+        )
+
+        val map = mutableMapOf<String, Message>()
+        while (cursor.moveToNext()) {
+            val reactionsStr = cursor.getString(16) ?: ""
+            val senderId = cursor.getString(1)
+            val receiverId = cursor.getString(2)
+            val rawContent = cursor.getString(3) ?: ""
+            val isGroup = cursor.getInt(7) == 1
+            val peerId = cursor.getString(19)
+
+            val decryptedContent = CryptoVault.decryptFromChannel(rawContent, senderId, receiverId)
+
+            val msg = Message(
+                id = cursor.getString(0),
+                senderId = senderId,
+                receiverId = receiverId,
+                content = decryptedContent,
+                timestamp = cursor.getLong(4),
+                isRead = cursor.getInt(5) == 1,
+                isDelivered = cursor.getInt(6) == 1,
+                isGroup = isGroup,
+                replyToId = cursor.getString(8),
+                replyToText = cursor.getString(9),
+                replyToSender = cursor.getString(10),
+                messageType = cursor.getString(11) ?: "TEXT",
+                mediaUrl = cursor.getString(12),
+                mediaName = cursor.getString(13),
+                mediaSize = cursor.getLong(14),
+                audioDurationSeconds = cursor.getInt(15),
+                reactions = deserializeReactions(reactionsStr),
+                isEdited = cursor.getInt(17) == 1,
+                disappearingAfterSeconds = cursor.getInt(18)
+            )
+            map[peerId] = msg
+        }
+        cursor.close()
+        map
+    }
+
+    suspend fun getUnreadCountsForAllPeers(userId: String): Map<String, Int> = withContext(Dispatchers.IO) {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery(
+            """
+            SELECT sender_id, COUNT(*)
+            FROM messages
+            WHERE receiver_id = ? AND is_group = 0 AND is_read = 0
+            GROUP BY sender_id
+            """.trimIndent(),
+            arrayOf(userId)
+        )
+        val map = mutableMapOf<String, Int>()
+        while (cursor.moveToNext()) {
+            map[cursor.getString(0)] = cursor.getInt(1)
+        }
+        cursor.close()
+        map
+    }
+
     suspend fun getUnreadGroupCount(groupId: String, currentUserId: String): Int = withContext(Dispatchers.IO) {
         val db = dbHelper.readableDatabase
         val cursor = db.rawQuery(
