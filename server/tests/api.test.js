@@ -99,6 +99,34 @@ describe('Messaging App REST API Contract Tests', () => {
     expect(res.body.message).toBe('Messages marked as read');
   });
 
+
+  test('PATCH /api/auth/profile updates user profile with valid payload', async () => {
+    const res = await request(app)
+      .patch('/api/auth/profile')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        fullName: 'Updated Name',
+        avatarColor: '#000000'
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe('Profile updated');
+    expect(res.body.user.fullName).toBe('Updated Name');
+    expect(res.body.user.avatarColor).toBe('#000000');
+  });
+
+
+
+  test('PATCH /api/auth/profile returns 401 without token', async () => {
+    const res = await request(app)
+      .patch('/api/auth/profile')
+      .send({
+        fullName: 'Unauthorized Attempt'
+      });
+
+    expect(res.statusCode).toBe(401);
+  });
+
   test('POST /api/logout clears session', async () => {
     const res = await request(app)
       .post('/api/logout')
