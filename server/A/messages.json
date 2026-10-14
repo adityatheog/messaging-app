@@ -1,0 +1,71 @@
+[
+  {
+    "id": "msg-seed-1",
+    "clientMsgId": "client-seed-1",
+    "senderId": "user-sarah",
+    "receiverId": "user-alex",
+    "content": "Hey Alex! Argon UI real-time sync is now active.",
+    "timestamp": "2026-10-13T23:35:22.811Z",
+    "read": true
+  },
+  {
+    "id": "msg-seed-2",
+    "clientMsgId": "client-seed-2",
+    "senderId": "user-alex",
+    "receiverId": "user-sarah",
+    "content": "Awesome! Delivery receipts and typing indicators look great.",
+    "timestamp": "2026-10-13T23:55:22.811Z",
+    "read": true
+  },
+  {
+    "id": "1f3eb38e-9eb5-4b9a-a9af-cb5685603e8e",
+    "clientMsgId": null,
+    "senderId": "8e530712-a8e1-481a-b1de-aec5cf50de78",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T00:35:23.118Z",
+    "read": false
+  },
+  {
+    "id": "cid-1791938123839",
+    "clientMsgId": "cid-1791938123839",
+    "senderId": "5398248e-3fe7-4736-b895-ff08ef5c31ba",
+    "receiverId": "391be71b-9455-4d91-bede-3766ec91811a",
+    "content": "Realtime test message from Alice",
+    "timestamp": "2026-10-14T00:35:23.842Z",
+    "read": false
+  },
+  {
+    "id": "unique-idempotent-1791938123853",
+    "clientMsgId": "unique-idempotent-1791938123853",
+    "senderId": "5398248e-3fe7-4736-b895-ff08ef5c31ba",
+    "receiverId": "391be71b-9455-4d91-bede-3766ec91811a",
+    "content": "Idempotency test payload",
+    "timestamp": "2026-10-14T00:35:23.871Z",
+    "read": false
+  },
+  {
+    "id": "p1-1791938123908",
+    "senderId": "5398248e-3fe7-4736-b895-ff08ef5c31ba",
+    "receiverId": "391be71b-9455-4d91-bede-3766ec91811a",
+    "content": "Page msg 1",
+    "timestamp": "2026-10-14T00:35:20.908Z",
+    "read": false
+  },
+  {
+    "id": "p2-1791938123910",
+    "senderId": "5398248e-3fe7-4736-b895-ff08ef5c31ba",
+    "receiverId": "391be71b-9455-4d91-bede-3766ec91811a",
+    "content": "Page msg 2",
+    "timestamp": "2026-10-14T00:35:21.910Z",
+    "read": false
+  },
+  {
+    "id": "p3-1791938123912",
+    "senderId": "5398248e-3fe7-4736-b895-ff08ef5c31ba",
+    "receiverId": "391be71b-9455-4d91-bede-3766ec91811a",
+    "content": "Page msg 3",
+    "timestamp": "2026-10-14T00:35:22.912Z",
+    "read": false
+  }
+]

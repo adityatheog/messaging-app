@@ -1,8 +1,17 @@
 import axios from 'axios';
 import { User, Message, Conversation, AuthResponse } from '../types';
 
+// Compute API base URL with fallback to relative /api
+const getBaseURL = (): string => {
+  const envApiUrl = import.meta.env.VITE_API_URL || '';
+  if (envApiUrl) {
+    return envApiUrl.endsWith('/api') ? envApiUrl : `${envApiUrl.replace(/\/+$/, '')}/api`;
+  }
+  return '/api';
+};
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json'
   }
@@ -33,12 +42,10 @@ export const authAPI = {
     const res = await api.post<AuthResponse>('/register', data);
     return res.data;
   },
-
   login: async (data: { username: string; password: string }): Promise<AuthResponse> => {
     const res = await api.post<AuthResponse>('/login', data);
     return res.data;
   },
-
   logout: async (): Promise<void> => {
     try {
       await api.post('/logout');
@@ -49,12 +56,10 @@ export const authAPI = {
       localStorage.removeItem('user');
     }
   },
-
   getMe: async (): Promise<{ user: User }> => {
     const res = await api.get<{ user: User }>('/me');
     return res.data;
   },
-
   updateProfile: async (data: { fullName?: string; avatarColor?: string }): Promise<{ user: User }> => {
     const res = await api.patch<{ user: User }>('/auth/profile', data);
     return res.data;
@@ -66,7 +71,6 @@ export const usersAPI = {
     const res = await api.get<User[]>('/users');
     return res.data;
   },
-
   getById: async (id: string): Promise<User> => {
     const res = await api.get<User>(`/users/${id}`);
     return res.data;
@@ -78,17 +82,14 @@ export const messagesAPI = {
     const res = await api.get<Conversation[]>('/conversations');
     return res.data;
   },
-
   getConversation: async (userId: string): Promise<Message[]> => {
     const res = await api.get<Message[]>(`/messages/${userId}`);
     return res.data;
   },
-
   send: async (data: { receiverId: string; content: string; clientMsgId?: string }): Promise<{ data: Message }> => {
     const res = await api.post<{ data: Message }>('/messages', data);
     return res.data;
   },
-
   markRead: async (senderId: string): Promise<void> => {
     await api.patch(`/messages/read/${senderId}`);
   }

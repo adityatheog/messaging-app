@@ -1,0 +1,66 @@
+[
+  {
+    "id": "user-sarah",
+    "username": "sarah_j",
+    "password": "$2a$10$gPy/Ckyd3IUR3w1x013L0eWAygxCxoRd.koe.COevVNWH8GI5rixO",
+    "fullName": "Sarah Jenkins",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T00:35:22.811Z"
+  },
+  {
+    "id": "user-alex",
+    "username": "alex_r",
+    "password": "$2a$10$gPy/Ckyd3IUR3w1x013L0eWAygxCxoRd.koe.COevVNWH8GI5rixO",
+    "fullName": "Alex Rivera",
+    "avatarColor": "#2dce89",
+    "createdAt": "2026-10-14T00:35:22.811Z"
+  },
+  {
+    "id": "user-david",
+    "username": "david_c",
+    "password": "$2a$10$gPy/Ckyd3IUR3w1x013L0eWAygxCxoRd.koe.COevVNWH8GI5rixO",
+    "fullName": "David Chen",
+    "avatarColor": "#11cdef",
+    "createdAt": "2026-10-14T00:35:22.811Z"
+  },
+  {
+    "id": "user-emily",
+    "username": "emily_w",
+    "password": "$2a$10$gPy/Ckyd3IUR3w1x013L0eWAygxCxoRd.koe.COevVNWH8GI5rixO",
+    "fullName": "Emily Watson",
+    "avatarColor": "#fb6340",
+    "createdAt": "2026-10-14T00:35:22.811Z"
+  },
+  {
+    "id": "user-michael",
+    "username": "mscott",
+    "password": "$2a$10$gPy/Ckyd3IUR3w1x013L0eWAygxCxoRd.koe.COevVNWH8GI5rixO",
+    "fullName": "Michael Scott",
+    "avatarColor": "#825ee4",
+    "createdAt": "2026-10-14T00:35:22.811Z"
+  },
+  {
+    "id": "8e530712-a8e1-481a-b1de-aec5cf50de78",
+    "username": "testuser_1791938122583",
+    "password": "$2a$10$cvQCpjRMLff.WJb.2LxcJ.uKVVi5LPUfaiUrXVEWKdKeeVTcT9XEu",
+    "fullName": "Test User",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T00:35:22.918Z"
+  },
+  {
+    "id": "5398248e-3fe7-4736-b895-ff08ef5c31ba",
+    "username": "alice_rt_1791938123519",
+    "password": "$2a$10$QmVcisnYya5hT6u5/1jNRe7yfNGGF6vMDhza.oBsP7FztOIN5uLYC",
+    "fullName": "Alice Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T00:35:23.628Z"
+  },
+  {
+    "id": "391be71b-9455-4d91-bede-3766ec91811a",
+    "username": "bob_rt_1791938123636",
+    "password": "$2a$10$7HegNpm5pnxLmHpLeWkoT.t.tbLKk3nOgiCFS4U93CUeQTMdQJQX6",
+    "fullName": "Bob Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T00:35:23.736Z"
+  }
+]
