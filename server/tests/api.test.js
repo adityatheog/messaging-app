@@ -161,6 +161,59 @@ describe('Messaging App REST API Contract Tests', () => {
     expect(res.body.data.receiverId).toBe(recipientId);
   });
 
+  describe('POST /api/messages Edge Cases', () => {
+    test('Fails when receiver ID is missing', async () => {
+      const res = await request(app)
+        .post('/api/messages')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          content: 'Hello!'
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Receiver ID and content are required');
+    });
+
+    test('Fails when content is missing', async () => {
+      const res = await request(app)
+        .post('/api/messages')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          receiverId: recipientId
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Receiver ID and content are required');
+    });
+
+    test('Fails when content is empty after trimming', async () => {
+      const res = await request(app)
+        .post('/api/messages')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          receiverId: recipientId,
+          content: '   '
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Message content cannot be empty');
+    });
+
+    test('Fails when content exceeds maximum length', async () => {
+      const longContent = 'A'.repeat(5001);
+      const res = await request(app)
+        .post('/api/messages')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          receiverId: recipientId,
+          content: longContent
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Message must be at most 5000 characters');
+    });
+  });
+
   test('GET /api/messages/:userId fetches conversation messages', async () => {
     const res = await request(app)
       .get(`/api/messages/${recipientId}`)
