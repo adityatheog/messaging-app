@@ -108,3 +108,38 @@ describe('Messaging App REST API Contract Tests', () => {
     expect(res.body.message).toBe('Logged out');
   });
 });
+
+describe('Auth Middleware Error Tests', () => {
+  test('returns 401 when no authorization header is provided', async () => {
+    const res = await request(app).get('/api/me');
+    expect(res.statusCode).toBe(401);
+    expect(res.body.error).toBe('No authentication token provided');
+  });
+
+  test('returns 401 when authorization header does not start with Bearer', async () => {
+    const res = await request(app)
+      .get('/api/me')
+      .set('Authorization', 'InvalidPrefix token123');
+    expect(res.statusCode).toBe(401);
+    expect(res.body.error).toBe('No authentication token provided');
+  });
+
+  test('returns 401 when token is empty after Bearer prefix', async () => {
+    // node/express trim trailing whitespaces from headers during parsing
+    // so `Bearer ` becomes `Bearer` which is caught by the first check.
+    // to test the empty token check, we can use a non-breaking space
+    const res = await request(app)
+      .get('/api/me')
+      .set('Authorization', 'Bearer  \xA0');
+    expect(res.statusCode).toBe(401);
+    expect(res.body.error).toBe('Invalid token format');
+  });
+
+  test('returns 401 when token is invalid or expired', async () => {
+    const res = await request(app)
+      .get('/api/me')
+      .set('Authorization', 'Bearer invalid.token.string');
+    expect(res.statusCode).toBe(401);
+    expect(res.body.error).toBe('Invalid or expired token');
+  });
+});
