@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { User, Lock, Mail, MessageSquare, AlertCircle, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { APP_NAME } from '../../constants/config';
+import { User, Lock, Mail, MessageSquare, AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
 interface AuthCardProps {
   onBackToLanding?: () => void;
@@ -12,28 +12,45 @@ export const AuthCard: React.FC<AuthCardProps> = ({ onBackToLanding }) => {
   const [isRegister, setIsRegister] = useState<boolean>(false);
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [fullName, setFullName] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
+    if (isRegister) {
+      if (username.trim().length < 3) {
+        setError('Username must be at least 3 characters');
+        return;
+      }
+      if (username.trim().length > 30) {
+        setError('Username must be at most 30 characters');
+        return;
+      }
+      if (password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return;
+      }
+      if (confirmPassword && password !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+    } else {
+      if (!username.trim() || !password) {
+        setError('Username and password are required');
+        return;
+      }
+    }
+
+    setLoading(true);
     try {
       if (isRegister) {
-        if (username.trim().length < 3) {
-          throw new Error('Username must be at least 3 characters');
-        }
-        if (password.length < 6) {
-          throw new Error('Password must be at least 6 characters');
-        }
         await register(username.trim(), password, fullName.trim());
       } else {
-        if (!username.trim() || !password) {
-          throw new Error('Username and password are required');
-        }
         await login(username.trim(), password);
       }
     } catch (err: any) {
@@ -141,7 +158,7 @@ export const AuthCard: React.FC<AuthCardProps> = ({ onBackToLanding }) => {
                     )}
                   </div>
 
-                  <div className="form-group mb-4">
+                  <div className="form-group mb-3">
                     <div className="input-group input-group-alternative">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -151,16 +168,47 @@ export const AuthCard: React.FC<AuthCardProps> = ({ onBackToLanding }) => {
                       <input
                         className="form-control"
                         placeholder="Password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                       />
+                      <div className="input-group-append">
+                        <button
+                          type="button"
+                          className="btn btn-link text-muted p-2"
+                          onClick={() => setShowPassword(!showPassword)}
+                          title={showPassword ? 'Hide password' : 'Show password'}
+                          style={{ boxShadow: 'none' }}
+                        >
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
                     </div>
                     {isRegister && (
                       <small className="form-text text-muted pl-2">Minimum 6 characters</small>
                     )}
                   </div>
+
+                  {isRegister && (
+                    <div className="form-group mb-4">
+                      <div className="input-group input-group-alternative">
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <Lock size={16} />
+                          </span>
+                        </div>
+                        <input
+                          className="form-control"
+                          placeholder="Confirm Password"
+                          type={showPassword ? 'text' : 'password'}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   <div className="text-center">
                     <button

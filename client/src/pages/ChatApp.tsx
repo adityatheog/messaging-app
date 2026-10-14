@@ -257,7 +257,7 @@ export const ChatApp: React.FC = () => {
     setSelectedUser(targetUser);
   };
 
-  const handleSendMessage = async (content: string): Promise<boolean> => {
+  const handleSendMessage = async (content: string, type?: string, mediaName?: string): Promise<boolean> => {
     if (!selectedUser || !content.trim()) return false;
 
     const queued = offlineQueue.enqueue(user!.id, selectedUser.id, content.trim());
@@ -269,7 +269,9 @@ export const ChatApp: React.FC = () => {
       content: content.trim(),
       timestamp: queued.timestamp,
       read: false,
-      status: 'pending'
+      status: 'pending',
+      messageType: (type as any) || 'TEXT',
+      mediaName: mediaName
     };
 
     setMessages((prev) => [...prev, optimisticMessage]);
@@ -282,7 +284,7 @@ export const ChatApp: React.FC = () => {
         if (res.data) {
           offlineQueue.remove(user!.id, queued.clientMsgId);
           setMessages((prev) =>
-            prev.map((m) => (m.clientMsgId === queued.clientMsgId ? { ...res.data!, status: 'sent' } : m))
+            prev.map((m) => (m.clientMsgId === queued.clientMsgId ? { ...res.data!, status: 'sent', messageType: (type as any) || 'TEXT', mediaName } : m))
           );
           fetchDirectory();
           return true;
@@ -302,7 +304,7 @@ export const ChatApp: React.FC = () => {
 
       offlineQueue.remove(user!.id, queued.clientMsgId);
       setMessages((prev) =>
-        prev.map((m) => (m.clientMsgId === queued.clientMsgId ? { ...res.data, status: 'sent' } : m))
+        prev.map((m) => (m.clientMsgId === queued.clientMsgId ? { ...res.data, status: 'sent', messageType: (type as any) || 'TEXT', mediaName } : m))
       );
       fetchDirectory();
       return true;

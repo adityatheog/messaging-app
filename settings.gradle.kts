@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Messaging App"
+rootProject.name = "SimpleLink"
 include(":app")

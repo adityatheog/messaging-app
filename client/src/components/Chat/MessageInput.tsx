@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, Paperclip, Mic, Image as ImageIcon, FileText } from 'lucide-react';
 
 interface MessageInputProps {
-  onSendMessage: (content: string) => Promise<boolean>;
+  onSendMessage: (content: string, type?: string, mediaName?: string) => Promise<boolean>;
   onTyping?: (isTyping: boolean) => void;
   disabled?: boolean;
 }
@@ -14,6 +14,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
 }) => {
   const [text, setText] = useState<string>('');
   const [sending, setSending] = useState<boolean>(false);
+  const [showAttachMenu, setShowAttachMenu] = useState<boolean>(false);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,69 +46,123 @@ export const MessageInput: React.FC<MessageInputProps> = ({
     }
 
     setSending(true);
-    const success = await onSendMessage(clean);
+    const success = await onSendMessage(clean, 'TEXT');
     if (success) {
       setText('');
     }
     setSending(false);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit(e);
-    }
+  const handleSendVoice = async () => {
+    setSending(true);
+    await onSendMessage('🎤 Encrypted voice note', 'VOICE');
+    setSending(false);
   };
 
-  const handleQuickPrompt = (prompt: string) => {
-    setText(prompt);
+  const handleSendFile = async (type: 'IMAGE' | 'DOCUMENT') => {
+    setShowAttachMenu(false);
+    setSending(true);
+    if (type === 'IMAGE') {
+      await onSendMessage('📷 Encrypted photo attachment', 'IMAGE', 'Photo_E2EE.jpg');
+    } else {
+      await onSendMessage('📄 Encrypted protocol document', 'DOCUMENT', 'Security_Spec.pdf');
+    }
+    setSending(false);
   };
 
   return (
-    <div className="bg-white border-top p-3 safe-bottom">
+    <div className="p-3 border-top" style={{ backgroundColor: '#161b22', borderColor: '#30363d' }}>
       {/* Quick response chips */}
-      <div className="d-flex flex-wrap mb-2 pb-1">
-        {['Sounds great! 👍', 'Let’s review the specs', 'Working on it right now!'].map((chip) => (
+      <div className="d-flex flex-wrap mb-2">
+        {['Safety numbers verified ✅', 'Reviewing protocol spec', 'Voice call online 📞'].map((chip) => (
           <button
             key={chip}
             type="button"
-            onClick={() => handleQuickPrompt(chip)}
-            className="btn btn-sm btn-secondary mr-2 mb-1 py-1 px-2 font-weight-normal text-muted"
-            style={{ fontSize: '0.8rem', minHeight: 'auto' }}
+            onClick={() => setText(chip)}
+            className="btn btn-sm mr-2 mb-1 py-1 px-2 text-muted"
+            style={{ fontSize: '0.75rem', backgroundColor: '#21262d', border: '1px solid #30363d' }}
           >
             {chip}
           </button>
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="d-flex align-items-center">
-        <div className="input-group input-group-alternative flex-grow-1 mr-2 shadow-sm">
-          <div className="input-group-prepend">
-            <span className="input-group-text">
-              <MessageSquare size={16} />
-            </span>
-          </div>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Type a message... (Enter to send)"
-            value={text}
-            onChange={handleTextChange}
-            onKeyDown={handleKeyDown}
-            disabled={disabled || sending}
-            autoComplete="off"
-          />
+      <form onSubmit={handleSubmit} className="d-flex align-items-center position-relative">
+        {/* Attachment menu trigger */}
+        <div className="position-relative mr-2">
+          <button
+            type="button"
+            onClick={() => setShowAttachMenu(!showAttachMenu)}
+            className="btn btn-sm btn-link text-muted p-2"
+            title="Attach Media or File"
+          >
+            <Paperclip size={18} />
+          </button>
+
+          {showAttachMenu && (
+            <div
+              className="position-absolute shadow-lg rounded p-2"
+              style={{
+                bottom: '100%',
+                left: 0,
+                backgroundColor: '#21262d',
+                border: '1px solid #30363d',
+                zIndex: 1050,
+                width: '180px'
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => handleSendFile('IMAGE')}
+                className="btn btn-sm btn-block text-left text-light d-flex align-items-center mb-1"
+              >
+                <ImageIcon size={15} className="mr-2 text-success" />
+                <span>Send Photo</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSendFile('DOCUMENT')}
+                className="btn btn-sm btn-block text-left text-light d-flex align-items-center"
+              >
+                <FileText size={15} className="mr-2 text-success" />
+                <span>Send Document</span>
+              </button>
+            </div>
+          )}
         </div>
 
-        <button
-          type="submit"
-          disabled={!text.trim() || sending || disabled}
-          className="btn btn-primary d-flex align-items-center justify-content-center px-3"
-          style={{ height: 'calc(2.75rem + 2px)', width: '48px', flexShrink: 0 }}
-          title="Send"
-        >
-          <Send size={18} />
-        </button>
+        <input
+          type="text"
+          className="form-control mr-2"
+          placeholder="Type an end-to-end encrypted message..."
+          value={text}
+          onChange={handleTextChange}
+          disabled={disabled || sending}
+          autoComplete="off"
+        />
+
+        {text.trim() ? (
+          <button
+            type="submit"
+            disabled={sending || disabled}
+            className="btn btn-primary d-flex align-items-center justify-content-center"
+            style={{ width: '42px', height: '42px' }}
+            title="Send"
+          >
+            <Send size={18} />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleSendVoice}
+            disabled={sending || disabled}
+            className="btn btn-outline-primary d-flex align-items-center justify-content-center"
+            style={{ width: '42px', height: '42px' }}
+            title="Record Voice Note"
+          >
+            <Mic size={18} />
+          </button>
+        )}
       </form>
     </div>
   );

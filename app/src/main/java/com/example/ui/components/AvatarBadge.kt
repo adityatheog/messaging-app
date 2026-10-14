@@ -68,3 +68,30 @@ fun AvatarBadge(
         }
     }
 }
+
+@Composable
+fun GroupAvatarBadge(
+    groupName: String,
+    size: Dp = 48.dp,
+    avatarColor: Color = Color(0xFF10B981),
+    modifier: Modifier = Modifier
+) {
+    val fontSize = (size.value * 0.36f).sp
+    val initials = groupName.trim().take(2).uppercase().ifEmpty { "G" }
+
+    Box(
+        modifier = modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(avatarColor),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = initials,
+            color = Color.White,
+            fontSize = fontSize,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+

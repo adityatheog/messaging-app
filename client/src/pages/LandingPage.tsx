@@ -70,7 +70,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenApp }) => {
             Connect Instantly on Any Device
           </h1>
           <p className="lead text-white-50 mx-auto mb-4" style={{ maxWidth: '640px' }}>
-            A modern real-time messaging platform with instant synchronization across Web, Android, iOS, Windows, and macOS with the elegant Argon Dashboard design.
+            A modern, privacy-focused messaging platform inspired by SimpleX Chat with pairwise isolated queues, end-to-end encryption, groups, and cross-platform synchronization.
           </p>
 
           {/* Primary Action Buttons */}
@@ -213,10 +213,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenApp }) => {
       </section>
 
       {/* Footer */}
-      <footer className="mt-auto py-4 bg-white border-top text-center text-muted small">
+      <footer className="mt-auto py-4 bg-transparent border-top text-center text-muted small" style={{ borderColor: '#30363d' }}>
         <div className="container">
           <p className="mb-0">
-            &copy; {new Date().getFullYear()} {APP_NAME}. Styled with the Argon Dashboard design system.
+            &copy; {new Date().getFullYear()} {APP_NAME}. SimpleX-inspired privacy architecture.
           </p>
         </div>
       </footer>

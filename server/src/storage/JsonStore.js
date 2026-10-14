@@ -111,7 +111,7 @@ class JsonStore extends Store {
           clientMsgId: 'client-seed-1',
           senderId: 'user-sarah',
           receiverId: 'user-alex',
-          content: 'Hey Alex! Argon UI real-time sync is now active.',
+          content: 'Hey Alex! SimpleLink pairwise queue is active. End-to-end ratchet initialized.',
           timestamp: new Date(Date.now() - 3600000).toISOString(),
           read: true
         },
@@ -120,7 +120,7 @@ class JsonStore extends Store {
           clientMsgId: 'client-seed-2',
           senderId: 'user-alex',
           receiverId: 'user-sarah',
-          content: 'Awesome! Delivery receipts and typing indicators look great.',
+          content: 'Awesome! Verified safety number: 9A2F · 4B18. No central user IDs exposed.',
           timestamp: new Date(Date.now() - 2400000).toISOString(),
           read: true
         }

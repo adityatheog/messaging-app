@@ -102,8 +102,8 @@ if (fs.existsSync(clientDistPath)) {
       <html>
         <head><title>Messaging App API</title></head>
         <body style="font-family: sans-serif; padding: 40px; background: #f8f9fe;">
-          <h1 style="color: #5e72e4;">Messaging App API Server</h1>
-          <p>API is running. Build the client using <code>npm run build</code> to serve the Argon UI.</p>
+          <h1 style="color: #10b981;">SimpleLink Messaging Server</h1>
+          <p>API is running. Build the client using <code>npm run build</code> to serve SimpleLink UI.</p>
           <p><a href="/health">Health check</a></p>
         </body>
       </html>

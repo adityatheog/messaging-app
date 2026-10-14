@@ -1,6 +1,6 @@
 {
-  "name": "Messaging App",
-  "description": "Modern direct messaging app with user authentication, user search, online status, and real-time conversations",
+  "name": "SimpleLink",
+  "description": "Privacy-focused messaging app inspired by SimpleX Chat with pairwise connections, E2EE channels, groups, and media",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

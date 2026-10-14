@@ -62,6 +62,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.ui.components.GoogleSignInButton
 import com.example.ui.theme.Blue600
+import com.example.ui.theme.Emerald600
 import com.example.ui.theme.Purple500
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -111,32 +112,28 @@ fun LoginScreen(
                         modifier = Modifier
                             .size(64.dp)
                             .clip(CircleShape)
-                            .background(
-                                Brush.linearGradient(
-                                    listOf(Blue600, Purple500)
-                                )
-                            ),
+                            .background(Emerald600),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ChatBubble,
-                            contentDescription = "Messaging App Logo",
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = "SimpleLink Logo",
                             tint = Color.White,
-                            modifier = Modifier.size(34.dp)
+                            modifier = Modifier.size(32.dp)
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Messaging App",
+                        text = "SimpleLink",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Text(
-                        text = "Sign in to continue conversations",
+                        text = "Pairwise E2EE · SimpleX-Inspired Messaging",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 4.dp)

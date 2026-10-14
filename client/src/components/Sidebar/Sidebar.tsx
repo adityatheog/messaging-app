@@ -12,7 +12,10 @@ import {
   X,
   LogOut,
   Settings,
-  Circle
+  Shield,
+  QrCode,
+  Copy,
+  Check
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -29,19 +32,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectUser
 }) => {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'chats' | 'people'>('chats');
+  const [activeTab, setActiveTab] = useState<'chats' | 'people' | 'connections'>('chats');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
   if (!user) return null;
 
   const totalUnread = conversations.reduce((acc, c) => acc + (c.unreadCount || 0), 0);
   const userColor = getAvatarColor(user.id, user.avatarColor);
+  const inviteLink = `simplelink:invite?code=sx-${user.id.slice(0, 8)}&user=${user.username}`;
+
+  const handleCopyInvite = () => {
+    navigator.clipboard.writeText(inviteLink);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
 
   return (
-    <aside className="sidebar-pane">
-      {/* Profile Header with Argon Gradient Band */}
-      <div className="bg-gradient-primary text-white p-3 shadow-sm">
+    <aside className="sidebar">
+      {/* SimpleLink Profile & Security Header */}
+      <div className="p-3 border-bottom" style={{ backgroundColor: '#161b22', borderColor: '#30363d' }}>
         <div className="d-flex align-items-center justify-content-between">
           <div
             className="d-flex align-items-center cursor-pointer"
@@ -50,37 +61,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="position-relative mr-2">
               <div
-                className="avatar-circle shadow-sm"
+                className="rounded-circle d-flex align-items-center justify-content-center text-white font-weight-bold"
                 style={{
-                  width: '42px',
-                  height: '42px',
-                  fontSize: '16px',
+                  width: '40px',
+                  height: '40px',
+                  fontSize: '15px',
                   backgroundColor: userColor
                 }}
               >
                 {getInitials(user.fullName || user.username)}
               </div>
-              <span className="status-indicator-dot online" />
+              <span className="online-indicator position-absolute" style={{ bottom: 0, right: 0 }} />
             </div>
             <div>
-              <span className="font-weight-bold text-white d-block text-truncate" style={{ maxWidth: '140px' }}>
-                {user.fullName || user.username}
-              </span>
-              <small className="text-white-50">@{user.username}</small>
+              <div className="d-flex align-items-center">
+                <span className="font-weight-bold text-white d-block text-truncate" style={{ maxWidth: '130px' }}>
+                  {user.fullName || user.username}
+                </span>
+                <span className="badge-simplex ml-2" style={{ fontSize: '0.68rem', padding: '1px 5px' }}>
+                  E2EE
+                </span>
+              </div>
+              <small className="text-muted">@{user.username}</small>
             </div>
           </div>
 
           <div className="d-flex align-items-center">
             <button
               onClick={() => setIsProfileOpen(true)}
-              className="btn btn-sm btn-link text-white p-1 mr-1"
-              title="Edit Profile"
+              className="btn btn-sm btn-link text-muted p-1 mr-1"
+              title="Settings"
             >
               <Settings size={18} />
             </button>
             <button
               onClick={logout}
-              className="btn btn-sm btn-link text-white p-1"
+              className="btn btn-sm btn-link text-muted p-1"
               title="Sign Out"
             >
               <LogOut size={18} />
@@ -90,92 +106,145 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Search Input */}
-      <div className="p-3 bg-white border-bottom">
-        <div className="input-group input-group-alternative">
-          <div className="input-group-prepend">
-            <span className="input-group-text">
-              <Search size={16} />
-            </span>
-          </div>
+      <div className="p-2 border-bottom" style={{ backgroundColor: '#161b22', borderColor: '#30363d' }}>
+        <div className="position-relative">
           <input
             type="text"
-            className="form-control"
-            placeholder={activeTab === 'chats' ? 'Search conversations...' : 'Search teammates...'}
+            className="form-control form-control-sm pl-4"
+            placeholder={
+              activeTab === 'chats'
+                ? 'Search conversations...'
+                : activeTab === 'people'
+                ? 'Search teammates...'
+                : 'Search safety numbers...'
+            }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+          <Search size={14} className="position-absolute text-muted" style={{ left: '10px', top: '10px' }} />
           {searchQuery && (
-            <div className="input-group-append">
-              <button
-                type="button"
-                className="btn btn-link text-muted p-2"
-                onClick={() => setSearchQuery('')}
-              >
-                <X size={16} />
-              </button>
-            </div>
+            <button
+              type="button"
+              className="btn btn-link text-muted p-0 position-absolute"
+              style={{ right: '10px', top: '6px' }}
+              onClick={() => setSearchQuery('')}
+            >
+              <X size={14} />
+            </button>
           )}
         </div>
       </div>
 
-      {/* Tabs: Chats and People */}
-      <div className="nav nav-pills nav-fill bg-white p-2 border-bottom">
+      {/* Tabs: Chats, People, Connections */}
+      <div className="d-flex border-bottom" style={{ backgroundColor: '#161b22', borderColor: '#30363d' }}>
         <button
           type="button"
           onClick={() => setActiveTab('chats')}
-          className={`nav-link py-2 font-weight-bold d-flex align-items-center justify-content-center ${
-            activeTab === 'chats' ? 'active bg-primary text-white shadow-sm' : 'text-muted'
+          className={`flex-grow-1 py-2 font-weight-bold btn btn-sm rounded-0 border-0 ${
+            activeTab === 'chats' ? 'text-success border-bottom border-success' : 'text-muted'
           }`}
-          style={{ borderRadius: '0.375rem', border: 'none' }}
+          style={{ borderBottomWidth: activeTab === 'chats' ? '2px' : '0' }}
         >
-          <MessageSquare size={16} className="mr-1" />
+          <MessageSquare size={14} className="mr-1" />
           Chats
           {totalUnread > 0 && (
-            <span className={`badge badge-pill ml-1 ${activeTab === 'chats' ? 'badge-white text-primary' : 'badge-primary text-white'}`}>
+            <span className="badge badge-pill badge-success ml-1" style={{ fontSize: '0.65rem' }}>
               {totalUnread}
             </span>
           )}
         </button>
+
         <button
           type="button"
           onClick={() => setActiveTab('people')}
-          className={`nav-link py-2 font-weight-bold d-flex align-items-center justify-content-center ${
-            activeTab === 'people' ? 'active bg-primary text-white shadow-sm' : 'text-muted'
+          className={`flex-grow-1 py-2 font-weight-bold btn btn-sm rounded-0 border-0 ${
+            activeTab === 'people' ? 'text-success border-bottom border-success' : 'text-muted'
           }`}
-          style={{ borderRadius: '0.375rem', border: 'none' }}
+          style={{ borderBottomWidth: activeTab === 'people' ? '2px' : '0' }}
         >
-          <Users size={16} className="mr-1" />
+          <Users size={14} className="mr-1" />
           People
-          <span className={`badge badge-pill ml-1 ${activeTab === 'people' ? 'badge-white text-primary' : 'badge-secondary text-muted'}`}>
-            {users.length}
-          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('connections')}
+          className={`flex-grow-1 py-2 font-weight-bold btn btn-sm rounded-0 border-0 ${
+            activeTab === 'connections' ? 'text-success border-bottom border-success' : 'text-muted'
+          }`}
+          style={{ borderBottomWidth: activeTab === 'connections' ? '2px' : '0' }}
+        >
+          <Shield size={14} className="mr-1" />
+          Pairwise
         </button>
       </div>
 
       {/* Tab Panels */}
-      {activeTab === 'chats' ? (
-        <ChatsList
-          conversations={
-            searchQuery
-              ? conversations.filter(
-                  (c) =>
-                    c.user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    c.user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    c.lastMessage.content.toLowerCase().includes(searchQuery.toLowerCase())
-                )
-              : conversations
-          }
-          selectedUser={selectedUser}
-          onSelectUser={onSelectUser}
-        />
-      ) : (
-        <PeopleList
-          users={users}
-          selectedUser={selectedUser}
-          onSelectUser={onSelectUser}
-          searchQuery={searchQuery}
-        />
-      )}
+      <div className="flex-grow-1 overflow-auto">
+        {activeTab === 'chats' && (
+          <ChatsList
+            conversations={
+              searchQuery
+                ? conversations.filter(
+                    (c) =>
+                      c.user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      c.user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      c.lastMessage.content.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                : conversations
+            }
+            selectedUser={selectedUser}
+            onSelectUser={onSelectUser}
+          />
+        )}
+
+        {activeTab === 'people' && (
+          <PeopleList
+            users={users}
+            selectedUser={selectedUser}
+            onSelectUser={onSelectUser}
+            searchQuery={searchQuery}
+          />
+        )}
+
+        {activeTab === 'connections' && (
+          <div className="p-3">
+            <div className="card p-3 mb-3" style={{ backgroundColor: '#21262d', borderColor: '#30363d' }}>
+              <div className="d-flex align-items-center mb-2">
+                <Shield size={18} className="text-success mr-2" />
+                <h6 className="mb-0 font-weight-bold">Pairwise Channel</h6>
+              </div>
+              <p className="small text-muted mb-2">
+                SimpleX-inspired isolated queues. No permanent user IDs at the broker layer.
+              </p>
+              <div
+                className="p-2 rounded font-monospace small mb-2 text-truncate text-success"
+                style={{ backgroundColor: '#0d1117', fontSize: '0.72rem' }}
+              >
+                sx://broker.simplexlink.net/q/{user.id.slice(0, 8)}
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyInvite}
+                className="btn btn-sm btn-primary d-flex align-items-center justify-content-center"
+              >
+                {copiedLink ? <Check size={14} className="mr-1" /> : <Copy size={14} className="mr-1" />}
+                {copiedLink ? 'Copied Link!' : 'Copy Pairwise Invite'}
+              </button>
+            </div>
+
+            <div className="card p-3" style={{ backgroundColor: '#21262d', borderColor: '#30363d' }}>
+              <div className="d-flex align-items-center mb-2">
+                <QrCode size={18} className="text-success mr-2" />
+                <h6 className="mb-0 font-weight-bold">Connection QR</h6>
+              </div>
+              <p className="small text-muted mb-0">
+                Share your connection link with peers to verify safety numbers out-of-band and establish E2E ratchets.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Profile Modal */}
       <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />

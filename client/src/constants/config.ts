@@ -1,21 +1,21 @@
-export const APP_NAME = 'Messaging App';
+export const APP_NAME = 'SimpleLink';
 
 export const DOWNLOAD_URLS = {
   web: '/app',
   android: 'https://github.com/adityatheog/messaging-app/releases/latest/download/app-release.apk',
   ios: 'https://testflight.apple.com/join/demo-messaging-app',
-  windows: 'https://github.com/adityatheog/messaging-app/releases/latest/download/MessagingApp-Setup.exe',
-  macos: 'https://github.com/adityatheog/messaging-app/releases/latest/download/MessagingApp.dmg'
+  windows: 'https://github.com/adityatheog/messaging-app/releases/latest/download/SimpleLink-Setup.exe',
+  macos: 'https://github.com/adityatheog/messaging-app/releases/latest/download/SimpleLink.dmg'
 };
 
 export const AVATAR_PALETTE = [
-  '#5e72e4', // Argon Primary
-  '#2dce89', // Argon Success
-  '#11cdef', // Argon Info
-  '#fb6340', // Argon Warning
-  '#f5365c', // Argon Danger
-  '#825ee4', // Argon Purple
-  '#172b4d'  // Argon Default
+  '#10b981', // Emerald
+  '#06b6d4', // Cyan
+  '#3b82f6', // Blue
+  '#8b5cf6', // Purple
+  '#ec4899', // Pink
+  '#f59e0b', // Amber
+  '#14b8a6'  // Teal
 ];
 
 export const getAvatarColor = (userId: string, defaultColor?: string): string => {

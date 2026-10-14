@@ -1,6 +1,8 @@
 package com.example.ui.chat
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,8 +29,24 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -40,45 +58,61 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.model.Group
 import com.example.data.model.Message
 import com.example.data.model.User
 import com.example.ui.components.AvatarBadge
+import com.example.ui.components.GroupAvatarBadge
 import com.example.ui.components.MessageBubble
-import com.example.ui.theme.Blue600
-import com.example.ui.theme.Green500
-import com.example.ui.theme.Slate400
-import com.example.ui.theme.Slate500
+import com.example.ui.theme.DestructiveRed
+import com.example.ui.theme.Emerald400
+import com.example.ui.theme.Emerald500
+import com.example.ui.theme.Emerald600
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChatPane(
     currentUser: User,
-    selectedUser: User?,
+    target: ChatTarget?,
     messages: List<Message>,
     isSending: Boolean,
+    replyingTo: Message?,
+    editingMessage: Message?,
     onSendMessage: (String) -> Unit,
+    onSendVoiceMessage: (Int) -> Unit,
+    onSendAttachment: (type: String, name: String, size: Long, url: String) -> Unit,
+    onToggleReaction: (messageId: String, emoji: String) -> Unit,
+    onSetReplyingTo: (Message?) -> Unit,
+    onSetEditingMessage: (Message?) -> Unit,
+    onDeleteMessage: (Message) -> Unit,
+    onStartVoiceCall: (User) -> Unit,
+    onToggleVerifyContact: (String) -> Unit,
     onBackClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    if (selectedUser == null) {
-        // Empty state matching ChatWindow.jsx
+    if (target == null) {
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -93,28 +127,28 @@ fun ChatPane(
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                        .background(Emerald600.copy(alpha = 0.12f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Forum,
-                        contentDescription = "No conversation selected",
-                        tint = Slate400,
+                        imageVector = Icons.Default.Shield,
+                        contentDescription = "SimpleLink Protocol",
+                        tint = Emerald500,
                         modifier = Modifier.size(44.dp)
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Welcome to Messaging App",
+                    text = "SimpleLink Private Messaging",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Select a conversation to start chatting",
+                    text = "Select a conversation or connection to start chatting with pairwise E2E encryption.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Slate500
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -122,9 +156,20 @@ fun ChatPane(
     }
 
     var messageText by remember { mutableStateOf("") }
+    var showAttachmentMenu by remember { mutableStateOf(false) }
+    var showSecurityDialog by remember { mutableStateOf(false) }
+    var isRecordingVoice by remember { mutableStateOf(false) }
+    var recordingSeconds by remember { mutableStateOf(0) }
     val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
-    // Auto-scroll to bottom on messages change
+    LaunchedEffect(editingMessage) {
+        if (editingMessage != null) {
+            messageText = editingMessage.content
+        }
+    }
+
+    // Auto scroll to bottom
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
@@ -137,7 +182,7 @@ fun ChatPane(
             .background(MaterialTheme.colorScheme.background)
             .imePadding()
     ) {
-        // Chat Header (matching ChatWindow.jsx header)
+        // Chat Header
         Surface(
             tonalElevation = 2.dp,
             shadowElevation = 2.dp,
@@ -148,14 +193,14 @@ fun ChatPane(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
-                    .padding(horizontal = 8.dp, vertical = 10.dp),
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (onBackClick != null) {
                     IconButton(
                         onClick = onBackClick,
                         modifier = Modifier
-                            .size(48.dp)
+                            .size(44.dp)
                             .testTag("chat_back_button")
                     ) {
                         Icon(
@@ -165,49 +210,96 @@ fun ChatPane(
                         )
                     }
                 } else {
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                 }
 
-                AvatarBadge(
-                    user = selectedUser,
-                    size = 44.dp,
-                    showOnlineIndicator = true
-                )
+                when (target) {
+                    is ChatTarget.Direct -> {
+                        AvatarBadge(user = target.user, size = 42.dp)
+                    }
+                    is ChatTarget.GroupChat -> {
+                        GroupAvatarBadge(groupName = target.group.name, size = 42.dp)
+                    }
+                }
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(10.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = selectedUser.displayName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = target.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        if (target is ChatTarget.Direct && target.user.isVerified) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = "Verified",
+                                tint = Emerald500,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        if (selectedUser.isOnline) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .clip(CircleShape)
-                                    .background(Green500)
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = "E2EE",
+                            tint = Emerald400,
+                            modifier = Modifier.size(11.dp)
+                        )
                         Text(
-                            text = if (selectedUser.isOnline) "Online" else "Offline",
+                            text = when (target) {
+                                is ChatTarget.Direct -> if (target.user.isOnline) "Online · E2E Ratchet" else "Offline · E2E Ratchet"
+                                is ChatTarget.GroupChat -> "${target.group.memberIds.size} members · E2E Group"
+                            },
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (selectedUser.isOnline) Green500 else Slate400
+                            color = Emerald400,
+                            fontSize = 11.sp
                         )
                     }
+                }
+
+                // Call Button (for 1:1 direct chat)
+                if (target is ChatTarget.Direct) {
+                    IconButton(
+                        onClick = { onStartVoiceCall(target.user) },
+                        modifier = Modifier
+                            .size(44.dp)
+                            .testTag("start_voice_call_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Call,
+                            contentDescription = "Voice Call",
+                            tint = Emerald500
+                        )
+                    }
+                }
+
+                // Security Info Button
+                IconButton(
+                    onClick = { showSecurityDialog = true },
+                    modifier = Modifier
+                        .size(44.dp)
+                        .testTag("security_info_button")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Shield,
+                        contentDescription = "Connection Security",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f))
 
         // Message List
         Box(
@@ -222,25 +314,123 @@ fun ChatPane(
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "No messages yet. Start the conversation!",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Slate500
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = "E2E Encrypted Channel",
+                            tint = Emerald500.copy(alpha = 0.5f),
+                            modifier = Modifier.size(36.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "End-to-End Encrypted Channel",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Messages and attachments are encrypted directly between devices.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             } else {
                 LazyColumn(
                     state = listState,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 6.dp)
                         .testTag("messages_list")
                 ) {
                     items(messages, key = { it.id }) { msg ->
                         MessageBubble(
                             message = msg,
-                            isSent = msg.senderId == currentUser.id
+                            isSent = msg.senderId == currentUser.id,
+                            currentUserId = currentUser.id,
+                            onReplyClick = { onSetReplyingTo(it) },
+                            onReactionToggle = onToggleReaction,
+                            onEditClick = { onSetEditingMessage(it) },
+                            onDeleteClick = { onDeleteMessage(it) }
                         )
+                    }
+                }
+            }
+        }
+
+        // Replying Preview Strip
+        AnimatedVisibility(visible = replyingTo != null) {
+            if (replyingTo != null) {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(3.dp, 30.dp)
+                                .background(Emerald600)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Replying to message",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Emerald500
+                            )
+                            Text(
+                                text = replyingTo.content,
+                                style = MaterialTheme.typography.bodySmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        IconButton(
+                            onClick = { onSetReplyingTo(null) },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(Icons.Default.Close, contentDescription = "Cancel reply", modifier = Modifier.size(18.dp))
+                        }
+                    }
+                }
+            }
+        }
+
+        // Editing Preview Strip
+        AnimatedVisibility(visible = editingMessage != null) {
+            if (editingMessage != null) {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Editing message...",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Emerald500,
+                            modifier = Modifier.weight(1f)
+                        )
+                        IconButton(
+                            onClick = {
+                                onSetEditingMessage(null)
+                                messageText = ""
+                            },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(Icons.Default.Close, contentDescription = "Cancel edit", modifier = Modifier.size(18.dp))
+                        }
                     }
                 }
             }
@@ -250,18 +440,16 @@ fun ChatPane(
         FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(horizontal = 12.dp, vertical = 3.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            val suggestions = listOf("Hey! How are you?", "Let's review the updates", "Looks great! 👍")
+            val suggestions = listOf("Safety number verified ✅", "Let's review the protocol spec", "Audio call now? 📞")
             suggestions.forEach { prompt ->
                 FilterChip(
                     selected = false,
-                    onClick = {
-                        onSendMessage(prompt)
-                    },
-                    label = { Text(prompt, fontSize = 12.sp) },
+                    onClick = { onSendMessage(prompt) },
+                    label = { Text(prompt, fontSize = 11.sp) },
                     shape = RoundedCornerShape(12.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         containerColor = MaterialTheme.colorScheme.surface
@@ -270,90 +458,323 @@ fun ChatPane(
             }
         }
 
-        // Bottom Message Input (matching MessageInput.jsx)
+        // Bottom Input Bar
         Surface(
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 3.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-                    .navigationBarsPadding(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = messageText,
-                    onValueChange = { messageText = it },
-                    placeholder = {
-                        Text(
-                            text = "Type a message...",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Slate400
+            if (isRecordingVoice) {
+                // Voice Note Recording Mode
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 10.dp)
+                        .navigationBarsPadding(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(12.dp)
+                                .clip(CircleShape)
+                                .background(DestructiveRed)
                         )
-                    },
-                    shape = RoundedCornerShape(24.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        focusedBorderColor = Blue600,
-                        unfocusedBorderColor = Color.Transparent
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Send
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onSend = {
-                            if (messageText.isNotBlank() && !isSending) {
-                                val text = messageText
-                                messageText = ""
-                                onSendMessage(text)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = String.format("Recording: 0:%02d", recordingSeconds),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = DestructiveRed
+                        )
+                    }
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TextButton(
+                            onClick = {
+                                isRecordingVoice = false
+                                recordingSeconds = 0
+                            }
+                        ) {
+                            Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+
+                        Button(
+                            onClick = {
+                                val duration = if (recordingSeconds > 0) recordingSeconds else 5
+                                onSendVoiceMessage(duration)
+                                isRecordingVoice = false
+                                recordingSeconds = 0
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Emerald600)
+                        ) {
+                            Icon(Icons.Default.Stop, contentDescription = "Send Voice Note", modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Send Voice")
+                        }
+                    }
+                }
+            } else {
+                // Standard Text and Media Input
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
+                        .navigationBarsPadding(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Attachment button
+                    Box {
+                        IconButton(
+                            onClick = { showAttachmentMenu = true },
+                            modifier = Modifier.size(44.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AttachFile,
+                                contentDescription = "Attachments",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = showAttachmentMenu,
+                            onDismissRequest = { showAttachmentMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Send Photo") },
+                                leadingIcon = { Icon(Icons.Default.Image, contentDescription = null, tint = Emerald500) },
+                                onClick = {
+                                    showAttachmentMenu = false
+                                    onSendAttachment("IMAGE", "Photo_${System.currentTimeMillis()}.jpg", 240000L, "")
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Send Document") },
+                                leadingIcon = { Icon(Icons.Default.Description, contentDescription = null, tint = Emerald500) },
+                                onClick = {
+                                    showAttachmentMenu = false
+                                    onSendAttachment("DOCUMENT", "Protocol_Spec.pdf", 1200000L, "")
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Record Voice Note") },
+                                leadingIcon = { Icon(Icons.Default.Mic, contentDescription = null, tint = Emerald500) },
+                                onClick = {
+                                    showAttachmentMenu = false
+                                    isRecordingVoice = true
+                                    recordingSeconds = 0
+                                    coroutineScope.launch {
+                                        while (isRecordingVoice) {
+                                            delay(1000)
+                                            recordingSeconds++
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = messageText,
+                        onValueChange = { messageText = it },
+                        placeholder = {
+                            Text(
+                                text = "Encrypted message...",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            )
+                        },
+                        shape = RoundedCornerShape(24.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            focusedBorderColor = Emerald600,
+                            unfocusedBorderColor = Color.Transparent
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Send
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onSend = {
+                                if (messageText.isNotBlank() && !isSending) {
+                                    val text = messageText
+                                    messageText = ""
+                                    onSendMessage(text)
+                                }
+                            }
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("message_input_field")
+                    )
+
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    if (messageText.isBlank()) {
+                        // Mic Button for direct voice note recording
+                        IconButton(
+                            onClick = {
+                                isRecordingVoice = true
+                                recordingSeconds = 0
+                                coroutineScope.launch {
+                                    while (isRecordingVoice) {
+                                        delay(1000)
+                                        recordingSeconds++
+                                    }
+                                }
+                            },
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = Emerald600.copy(alpha = 0.15f)
+                            ),
+                            modifier = Modifier
+                                .size(46.dp)
+                                .clip(CircleShape)
+                                .testTag("record_voice_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Mic,
+                                contentDescription = "Record Voice Note",
+                                tint = Emerald500,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    } else {
+                        // Send Text Button
+                        IconButton(
+                            onClick = {
+                                if (messageText.isNotBlank() && !isSending) {
+                                    val text = messageText
+                                    messageText = ""
+                                    onSendMessage(text)
+                                }
+                            },
+                            enabled = messageText.isNotBlank() && !isSending,
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = Emerald600,
+                                disabledContainerColor = Emerald600.copy(alpha = 0.4f)
+                            ),
+                            modifier = Modifier
+                                .size(46.dp)
+                                .clip(CircleShape)
+                                .testTag("send_message_button")
+                        ) {
+                            if (isSending) {
+                                CircularProgressIndicator(
+                                    color = Color.White,
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Send,
+                                    contentDescription = "Send message",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
                             }
                         }
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag("message_input_field")
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                IconButton(
-                    onClick = {
-                        if (messageText.isNotBlank() && !isSending) {
-                            val text = messageText
-                            messageText = ""
-                            onSendMessage(text)
-                        }
-                    },
-                    enabled = messageText.isNotBlank() && !isSending,
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Blue600,
-                        disabledContainerColor = Blue600.copy(alpha = 0.4f)
-                    ),
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .testTag("send_message_button")
-                ) {
-                    if (isSending) {
-                        CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Send,
-                            contentDescription = "Send message",
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
                     }
                 }
             }
         }
+    }
+
+    // Dialog: Connection Security & Verification
+    if (showSecurityDialog) {
+        AlertDialog(
+            onDismissRequest = { showSecurityDialog = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Shield, contentDescription = null, tint = Emerald500)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Connection Security", fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                Column {
+                    when (target) {
+                        is ChatTarget.Direct -> {
+                            Text(
+                                text = "Pairwise E2EE Safety Number:",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = target.user.safetyNumber,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                color = Emerald400,
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Isolated Broker Queue:",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = target.user.pairwiseQueueAddress,
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = if (target.user.isVerified) "Verified Connection" else "Unverified Connection",
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = if (target.user.isVerified) Emerald500 else Color.Gray
+                                )
+                                Button(
+                                    onClick = {
+                                        onToggleVerifyContact(target.user.id)
+                                        showSecurityDialog = false
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Emerald600)
+                                ) {
+                                    Text(if (target.user.isVerified) "Unverify" else "Mark Verified")
+                                }
+                            }
+                        }
+                        is ChatTarget.GroupChat -> {
+                            Text(
+                                text = "Group Name: ${target.group.name}",
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "Total Members: ${target.group.memberIds.size}",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Description: ${target.group.description.ifBlank { "Private encrypted group" }}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Encryption: Double-Ratchet Mesh over Pairwise SimpleX Queues",
+                                fontSize = 11.sp,
+                                color = Emerald500,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showSecurityDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
     }
 }

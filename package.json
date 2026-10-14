@@ -1,7 +1,7 @@
 {
   "name": "messaging-app",
   "version": "1.0.0",
-  "description": "Production-Ready Cross-Platform Real-Time Messaging App (Argon UI)",
+  "description": "SimpleLink — Privacy-Focused Messaging Platform Inspired by SimpleX Chat",
   "private": true,
   "workspaces": [
     "server",

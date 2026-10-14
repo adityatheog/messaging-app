@@ -10,7 +10,20 @@ data class Message(
     val receiverId: String,
     val content: String,
     val timestamp: Long = System.currentTimeMillis(),
-    val isRead: Boolean = false
+    val isRead: Boolean = false,
+    val isDelivered: Boolean = true,
+    val isGroup: Boolean = false,
+    val replyToId: String? = null,
+    val replyToText: String? = null,
+    val replyToSender: String? = null,
+    val messageType: String = "TEXT", // "TEXT", "IMAGE", "VOICE", "DOCUMENT"
+    val mediaUrl: String? = null,
+    val mediaName: String? = null,
+    val mediaSize: Long = 0L,
+    val audioDurationSeconds: Int = 0,
+    val reactions: Map<String, List<String>> = emptyMap(), // emoji -> list of userIds
+    val isEdited: Boolean = false,
+    val disappearingAfterSeconds: Int = 0
 ) {
     val formattedTime: String
         get() {
@@ -30,4 +43,8 @@ data class Message(
                 dateFormatter.format(Date(timestamp))
             }
         }
+
+    val hasReactions: Boolean
+        get() = reactions.any { it.value.isNotEmpty() }
 }
+

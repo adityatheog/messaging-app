@@ -8,42 +8,42 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val LightColorScheme = lightColorScheme(
-    primary = Blue600,
+    primary = Emerald600,
     onPrimary = Color.White,
-    primaryContainer = Blue50,
-    onPrimaryContainer = Blue700,
-    secondary = Purple500,
+    primaryContainer = Emerald50,
+    onPrimaryContainer = Color(0xFF065F46),
+    secondary = DarkSurfaceElevated,
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFF3E8FF),
-    onSecondaryContainer = Purple600,
-    background = Slate50,
-    onBackground = Slate900,
-    surface = Color.White,
-    onSurface = Slate900,
-    surfaceVariant = Slate100,
-    onSurfaceVariant = Slate700,
-    outline = Slate200,
-    error = Red500,
+    secondaryContainer = LightSurfaceElevated,
+    onSecondaryContainer = LightTextPrimary,
+    background = LightBg,
+    onBackground = LightTextPrimary,
+    surface = LightSurface,
+    onSurface = LightTextPrimary,
+    surfaceVariant = LightSurfaceElevated,
+    onSurfaceVariant = LightTextSecondary,
+    outline = LightBorder,
+    error = DestructiveRed,
     onError = Color.White
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Blue500,
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFF1E3A8A),
-    onPrimaryContainer = Blue100,
-    secondary = Purple500,
-    onSecondary = Color.White,
-    secondaryContainer = Color(0xFF4C1D95),
-    onSecondaryContainer = Color(0xFFE9D5FF),
-    background = Color(0xFF0B0F17),
-    onBackground = Color(0xFFF1F5F9),
-    surface = Color(0xFF111827),
-    onSurface = Color(0xFFF1F5F9),
-    surfaceVariant = Color(0xFF1F2937),
-    onSurfaceVariant = Color(0xFFCBD5E1),
-    outline = Color(0xFF374151),
-    error = Red500,
+    primary = Emerald500,
+    onPrimary = Color(0xFF042F2E),
+    primaryContainer = Color(0xFF064E3B),
+    onPrimaryContainer = Emerald100,
+    secondary = Emerald400,
+    onSecondary = Color(0xFF042F2E),
+    secondaryContainer = DarkSurfaceElevated,
+    onSecondaryContainer = DarkTextPrimary,
+    background = DarkBg,
+    onBackground = DarkTextPrimary,
+    surface = DarkSurface,
+    onSurface = DarkTextPrimary,
+    surfaceVariant = DarkSurfaceElevated,
+    onSurfaceVariant = DarkTextSecondary,
+    outline = DarkBorder,
+    error = DestructiveRed,
     onError = Color.White
 )
 
@@ -60,3 +60,4 @@ fun MessagingAppTheme(
         content = content
     )
 }
+
