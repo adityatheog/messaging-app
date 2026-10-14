@@ -1,0 +1,29 @@
+[
+  {
+    "id": "msg-seed-1",
+    "clientMsgId": "client-seed-1",
+    "senderId": "user-sarah",
+    "receiverId": "user-alex",
+    "content": "Hey Alex! SimpleLink pairwise queue is active. End-to-end ratchet initialized.",
+    "timestamp": "2026-10-14T08:42:30.386Z",
+    "read": true
+  },
+  {
+    "id": "msg-seed-2",
+    "clientMsgId": "client-seed-2",
+    "senderId": "user-alex",
+    "receiverId": "user-sarah",
+    "content": "Awesome! Verified safety number: 9A2F · 4B18. No central user IDs exposed.",
+    "timestamp": "2026-10-14T09:02:30.386Z",
+    "read": true
+  },
+  {
+    "id": "3e1deb38-ac7f-4a39-8995-f0e2fb58dfdc",
+    "clientMsgId": null,
+    "senderId": "1ea8ec41-9bc2-48a2-9224-d04b1130d104",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T09:42:30.627Z",
+    "read": false
+  }
+]

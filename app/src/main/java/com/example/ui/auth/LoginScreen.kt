@@ -47,6 +47,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
@@ -60,7 +61,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.ui.components.GoogleSignInButton
 import com.example.ui.theme.Blue600
 import com.example.ui.theme.Emerald600
 import com.example.ui.theme.Purple500
@@ -68,7 +68,7 @@ import com.example.ui.theme.Purple500
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LoginScreen(
-    onGoogleSignInClick: () -> Unit,
+    onCreatePrivacyIdentity: () -> Unit,
     onLoginClick: (String, String) -> Unit,
     onQuickLogin: (String) -> Unit,
     onNavigateToRegister: () -> Unit,
@@ -141,10 +141,46 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Primary Google Sign-In button
-                    GoogleSignInButton(
-                        onClick = onGoogleSignInClick,
-                        isLoading = isLoading
+                    // Primary 1-Tap Privacy Identity Creation Button
+                    Button(
+                        onClick = onCreatePrivacyIdentity,
+                        enabled = !isLoading,
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .testTag("create_privacy_identity_button")
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = "Shield",
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Create Private Identity (1-Tap)",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = "Zero social login · No phone number or email · Keys stored locally",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
 
                     Spacer(modifier = Modifier.height(18.dp))
@@ -155,7 +191,7 @@ fun LoginScreen(
                     ) {
                         HorizontalDivider(modifier = Modifier.weight(1f))
                         Text(
-                            text = "OR",
+                            text = "OR SIGN IN WITH HANDLE",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(horizontal = 12.dp)

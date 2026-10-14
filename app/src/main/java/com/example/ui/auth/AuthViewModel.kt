@@ -79,4 +79,21 @@ class AuthViewModel(private val repository: MessageRepository) : ViewModel() {
     fun quickLoginDemo(username: String) {
         login(username, "password123")
     }
+
+    fun createPrivacyIdentity(displayName: String? = null, recoveryPassphrase: String? = null) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            val result = repository.createPrivacyIdentity(displayName, recoveryPassphrase)
+            result.fold(
+                onSuccess = { user ->
+                    _authState.value = AuthState.Authenticated(user, "privacy_token_${user.id}")
+                },
+                onFailure = { err ->
+                    _errorMessage.value = err.message ?: "Failed to generate privacy identity"
+                }
+            )
+            _isLoading.value = false
+        }
+    }
 }

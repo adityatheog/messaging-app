@@ -67,15 +67,15 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
 
-    // Firebase
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.auth)
+    // Privacy-first architecture: Unused cloud social auth dependencies commented out for APK size optimization
+    // implementation(platform(libs.firebase.bom))
+    // implementation(libs.firebase.firestore)
+    // implementation(libs.firebase.auth)
+    // implementation(libs.androidx.credentials)
+    // implementation(libs.androidx.credentials.play.services)
+    // implementation(libs.googleid)
 
-    // Jetpack Credential Manager for Google Sign-In
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services)
-    implementation(libs.googleid)
+    testImplementation(libs.junit)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)

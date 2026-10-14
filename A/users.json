@@ -1,0 +1,50 @@
+[
+  {
+    "id": "user-sarah",
+    "username": "sarah_j",
+    "password": "$2a$10$9OC4kY8kirQYe9UcsQD0qeyoguYAvqAKXvbO0rOd6F1hwENlxoKsm",
+    "fullName": "Sarah Jenkins",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T09:42:30.385Z"
+  },
+  {
+    "id": "user-alex",
+    "username": "alex_r",
+    "password": "$2a$10$9OC4kY8kirQYe9UcsQD0qeyoguYAvqAKXvbO0rOd6F1hwENlxoKsm",
+    "fullName": "Alex Rivera",
+    "avatarColor": "#2dce89",
+    "createdAt": "2026-10-14T09:42:30.385Z"
+  },
+  {
+    "id": "user-david",
+    "username": "david_c",
+    "password": "$2a$10$9OC4kY8kirQYe9UcsQD0qeyoguYAvqAKXvbO0rOd6F1hwENlxoKsm",
+    "fullName": "David Chen",
+    "avatarColor": "#11cdef",
+    "createdAt": "2026-10-14T09:42:30.385Z"
+  },
+  {
+    "id": "user-emily",
+    "username": "emily_w",
+    "password": "$2a$10$9OC4kY8kirQYe9UcsQD0qeyoguYAvqAKXvbO0rOd6F1hwENlxoKsm",
+    "fullName": "Emily Watson",
+    "avatarColor": "#fb6340",
+    "createdAt": "2026-10-14T09:42:30.385Z"
+  },
+  {
+    "id": "user-michael",
+    "username": "mscott",
+    "password": "$2a$10$9OC4kY8kirQYe9UcsQD0qeyoguYAvqAKXvbO0rOd6F1hwENlxoKsm",
+    "fullName": "Michael Scott",
+    "avatarColor": "#825ee4",
+    "createdAt": "2026-10-14T09:42:30.385Z"
+  },
+  {
+    "id": "1ea8ec41-9bc2-48a2-9224-d04b1130d104",
+    "username": "testuser_1791970950197",
+    "password": "$2a$10$juUWiax0A3heBYvLM66VEOgrm0Vz6.h54mKmh/pfc0yGEavSD5X5u",
+    "fullName": "Test User",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T09:42:30.493Z"
+  }
+]

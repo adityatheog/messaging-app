@@ -3,6 +3,8 @@ package com.example.data.storage
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
+import com.example.data.crypto.CryptoVault
 import com.example.data.model.ConnectionInvitation
 import com.example.data.model.Group
 import com.example.data.model.Message
@@ -249,6 +251,23 @@ class MessageRepository(context: Context) {
 
         _activePresence.value = _activePresence.value + newId
         Result.success(user)
+    }
+
+    suspend fun createPrivacyIdentity(displayName: String? = null, recoveryPassphrase: String? = null): Result<User> = withContext(Dispatchers.IO) {
+        val rawUuid = UUID.randomUUID().toString()
+        val shortId = rawUuid.replace("-", "").take(8)
+        val cleanHandle = if (!displayName.isNullOrBlank()) {
+            displayName.trim().lowercase().replace(" ", "_").take(24)
+        } else {
+            "anon_$shortId"
+        }
+        val cleanFullName = if (!displayName.isNullOrBlank()) {
+            displayName.trim().take(30)
+        } else {
+            "Private Node ${shortId.take(4).uppercase()}"
+        }
+        val passwordToHash = if (!recoveryPassphrase.isNullOrBlank()) recoveryPassphrase else rawUuid
+        registerUser(cleanHandle, passwordToHash, cleanFullName)
     }
 
     suspend fun loginUser(username: String, password: String): Result<User> = withContext(Dispatchers.IO) {
@@ -567,10 +586,75 @@ class MessageRepository(context: Context) {
     }
 
     // ==========================================
-    // Messages Query & Management
+    // Messages Query & Management (with E2EE & Disappearing Messages)
     // ==========================================
 
+    suspend fun purgeExpiredMessages() = withContext(Dispatchers.IO) {
+        val now = System.currentTimeMillis()
+        val db = dbHelper.writableDatabase
+        val deleted = db.delete(
+            "messages",
+            "disappearing_after > 0 AND (? - timestamp) > (disappearing_after * 1000)",
+            arrayOf(now.toString())
+        )
+        if (deleted > 0) {
+            _messagesUpdateTrigger.emit(Pair("system", "purged"))
+        }
+    }
+
+    suspend fun isContactBlocked(userId: String): Boolean = withContext(Dispatchers.IO) {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT is_blocked FROM users WHERE id = ?", arrayOf(userId))
+        val blocked = if (cursor.moveToFirst()) cursor.getInt(0) == 1 else false
+        cursor.close()
+        blocked
+    }
+
+    suspend fun ensureUser(
+        id: String,
+        username: String,
+        fullName: String
+    ): User = withContext(Dispatchers.IO) {
+        val existing = getUserById(id)
+        if (existing != null) return@withContext existing
+
+        val now = System.currentTimeMillis()
+        val safetyNumber = User.generateDefaultSafetyNumber(id)
+        val queueAddr = "sx://broker.simplexlink.net/q/${id.take(8)}"
+        val cleanUsername = username.trim().ifEmpty { "user_${id.take(5)}" }
+        val cleanFullName = fullName.trim().ifEmpty { cleanUsername }
+
+        val cv = ContentValues().apply {
+            put("id", id)
+            put("username", cleanUsername)
+            put("password_hash", hashPassword("oauth_external"))
+            put("full_name", cleanFullName)
+            put("created_at", now)
+            put("last_seen", now)
+            put("is_contact", 1)
+            put("is_blocked", 0)
+            put("is_verified", 1)
+            put("safety_number", safetyNumber)
+            put("queue_address", queueAddr)
+            put("disappearing_timer", 0)
+        }
+        dbHelper.writableDatabase.insertWithOnConflict("users", null, cv, SQLiteDatabase.CONFLICT_REPLACE)
+        val newUser = User(
+            id = id,
+            username = cleanUsername,
+            fullName = cleanFullName,
+            isOnline = true,
+            lastSeen = now,
+            isVerified = true,
+            safetyNumber = safetyNumber,
+            pairwiseQueueAddress = queueAddr
+        )
+        _activePresence.value = _activePresence.value + id
+        newUser
+    }
+
     suspend fun getMessagesBetween(userId1: String, userId2: String): List<Message> = withContext(Dispatchers.IO) {
+        purgeExpiredMessages()
         val db = dbHelper.readableDatabase
         val cursor = db.rawQuery(
             """
@@ -589,6 +673,7 @@ class MessageRepository(context: Context) {
     }
 
     suspend fun getGroupMessages(groupId: String): List<Message> = withContext(Dispatchers.IO) {
+        purgeExpiredMessages()
         val db = dbHelper.readableDatabase
         val cursor = db.rawQuery(
             """
@@ -610,16 +695,28 @@ class MessageRepository(context: Context) {
         val list = mutableListOf<Message>()
         while (cursor.moveToNext()) {
             val reactionsStr = cursor.getString(16) ?: ""
+            val senderId = cursor.getString(1)
+            val receiverId = cursor.getString(2)
+            val rawContent = cursor.getString(3) ?: ""
+            val isGroup = cursor.getInt(7) == 1
+
+            // Decrypt AES-256-GCM payload if stored encrypted with "ENC:"
+            val decryptedContent = if (!isGroup) {
+                CryptoVault.decryptFromChannel(rawContent, senderId, receiverId)
+            } else {
+                CryptoVault.decryptFromChannel(rawContent, senderId, receiverId)
+            }
+
             list.add(
                 Message(
                     id = cursor.getString(0),
-                    senderId = cursor.getString(1),
-                    receiverId = cursor.getString(2),
-                    content = cursor.getString(3),
+                    senderId = senderId,
+                    receiverId = receiverId,
+                    content = decryptedContent,
                     timestamp = cursor.getLong(4),
                     isRead = cursor.getInt(5) == 1,
                     isDelivered = cursor.getInt(6) == 1,
-                    isGroup = cursor.getInt(7) == 1,
+                    isGroup = isGroup,
                     replyToId = cursor.getString(8),
                     replyToText = cursor.getString(9),
                     replyToSender = cursor.getString(10),
@@ -736,6 +833,11 @@ class MessageRepository(context: Context) {
             return@withContext Result.failure(IllegalArgumentException("Message content cannot be empty"))
         }
 
+        // Security check: Reject transmission if peer is blocked
+        if (!isGroup && isContactBlocked(receiverId)) {
+            return@withContext Result.failure(IllegalStateException("Cannot send message: Contact is blocked"))
+        }
+
         val msg = Message(
             id = UUID.randomUUID().toString(),
             senderId = senderId,
@@ -766,8 +868,20 @@ class MessageRepository(context: Context) {
     }
 
     suspend fun editMessage(messageId: String, newContent: String): Boolean = withContext(Dispatchers.IO) {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT sender_id, receiver_id FROM messages WHERE id = ?", arrayOf(messageId))
+        val encryptedContent = if (cursor.moveToFirst()) {
+            val sender = cursor.getString(0)
+            val receiver = cursor.getString(1)
+            cursor.close()
+            CryptoVault.encryptForChannel(newContent.trim(), sender, receiver)
+        } else {
+            cursor.close()
+            newContent.trim()
+        }
+
         val cv = ContentValues().apply {
-            put("content", newContent.trim())
+            put("content", encryptedContent)
             put("is_edited", 1)
         }
         val rows = dbHelper.writableDatabase.update("messages", cv, "id = ?", arrayOf(messageId))
@@ -813,11 +927,14 @@ class MessageRepository(context: Context) {
     }
 
     private fun insertMessageDirect(msg: Message) {
+        // Encrypt payload using AES-256-GCM before writing to local SQLite database
+        val encryptedContent = CryptoVault.encryptForChannel(msg.content, msg.senderId, msg.receiverId)
+
         val cv = ContentValues().apply {
             put("id", msg.id)
             put("sender_id", msg.senderId)
             put("receiver_id", msg.receiverId)
-            put("content", msg.content)
+            put("content", encryptedContent)
             put("timestamp", msg.timestamp)
             put("is_read", if (msg.isRead) 1 else 0)
             put("is_delivered", if (msg.isDelivered) 1 else 0)

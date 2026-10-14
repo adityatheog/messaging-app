@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { APP_NAME } from '../../constants/config';
-import { User, Lock, Mail, MessageSquare, AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { User, Lock, Shield, UserCheck, MessageSquare, AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
 interface AuthCardProps {
   onBackToLanding?: () => void;
@@ -17,6 +17,23 @@ export const AuthCard: React.FC<AuthCardProps> = ({ onBackToLanding }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const handleCreatePrivacyIdentity = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const randHex = Math.random().toString(36).substring(2, 8);
+      const anonUsername = `anon_${randHex}`;
+      const anonPassword = `priv_${Math.random().toString(36).substring(2, 10)}_${Date.now()}`;
+      const anonFullName = `Privacy Node ${randHex.toUpperCase()}`;
+      await register(anonUsername, anonPassword, anonFullName);
+    } catch (err: any) {
+      const msg = err.response?.data?.error || err.message || 'Failed to generate private identity';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,18 +133,38 @@ export const AuthCard: React.FC<AuthCardProps> = ({ onBackToLanding }) => {
                   </div>
                 )}
 
+                {/* 1-Click Privacy Identity Button */}
+                <button
+                  type="button"
+                  onClick={handleCreatePrivacyIdentity}
+                  disabled={loading}
+                  className="btn btn-primary btn-block py-2 mb-2 shadow-sm d-flex align-items-center justify-content-center"
+                >
+                  <Shield size={18} className="mr-2" />
+                  <strong>Create Private Identity (1-Click)</strong>
+                </button>
+                <div className="text-center text-muted small mb-3">
+                  Zero social login · No email or phone · Cryptographic keys
+                </div>
+
+                <div className="text-center my-3 d-flex align-items-center">
+                  <div className="flex-grow-1 border-top"></div>
+                  <span className="px-2 text-muted small font-weight-bold">OR USE CUSTOM HANDLE</span>
+                  <div className="flex-grow-1 border-top"></div>
+                </div>
+
                 <form onSubmit={handleSubmit}>
                   {isRegister && (
                     <div className="form-group mb-3">
                       <div className="input-group input-group-alternative">
                         <div className="input-group-prepend">
                           <span className="input-group-text">
-                            <Mail size={16} />
+                            <UserCheck size={16} />
                           </span>
                         </div>
                         <input
                           className="form-control"
-                          placeholder="Full Name (optional)"
+                          placeholder="Display Name (optional)"
                           type="text"
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}

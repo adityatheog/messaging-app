@@ -306,6 +306,7 @@ class JsonStore extends Store {
         await this.writeJsonAtomic(this.messagesFile, nextMessages);
         this.memMessages = nextMessages;
       }
+      return changed;
     });
   }
 
