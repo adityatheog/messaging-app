@@ -1,4 +1,6 @@
-## Hardcoded Fallback Secrets
-- **Vulnerability**: The application was using a hardcoded fallback string for the `JWT_SECRET` in `server/src/config/env.js`.
-- **Impact**: If the `JWT_SECRET` environment variable was accidentally omitted during deployment, the application would silently use the hardcoded secret. This allows anyone with access to the source code to forge JWT tokens and gain unauthorized access.
-- **Fix**: Modified `getJwtSecret` to explicitly check if `process.env.NODE_ENV === 'production'` and `!process.env.JWT_SECRET`, throwing a critical error instead of using the fallback.
+# CRITICAL Security Learnings
+
+## Hardcoded Fallback JWT Secrets
+**Vulnerability:** The backend `server/src/config/env.js` contained a hardcoded fallback for `process.env.JWT_SECRET` (`DEFAULT_JWT_SECRET`).
+**Risk:** If `JWT_SECRET` is missing in production environments, the system would silently fall back to this known/hardcoded string. Attackers could forge valid JWTs to impersonate users, leading to full authentication bypass and unauthorized access.
+**Fix:** Modified `getJwtSecret` to explicitly check if `process.env.NODE_ENV === 'production'` and throw a fatal error if `JWT_SECRET` is not set, preventing the fallback in production while allowing it in local dev/test environments.
