@@ -28,7 +28,7 @@ const initSockets = (httpServer) => {
         if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
           return callback(null, true);
         }
-        return callback(null, true);
+        return callback(new Error('Not allowed by CORS'));
       },
       credentials: true,
       methods: ['GET', 'POST']
