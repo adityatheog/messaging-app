@@ -1,4 +1,4 @@
-## 2024-10-14 - Fix Overly Permissive CORS Configuration
-**Vulnerability:** The application was allowing all origins by default by unconditionally returning `callback(null, true)` at the end of the custom CORS validation functions in both Express (`server/src/index.js`) and Socket.IO (`server/src/sockets/index.js`). This completely defeated the purpose of the CORS whitelist.
-**Learning:** Even when a whitelist is defined, the fallback mechanism in custom CORS functions must explicitly reject unrecognized origins, otherwise the security boundary is compromised.
-**Prevention:** Always ensure the default case in custom validation logic is to deny access (`return callback(new Error('Not allowed by CORS'))`) rather than allow it.
+## Hardcoded Fallback Secrets
+- **Vulnerability**: The application was using a hardcoded fallback string for the `JWT_SECRET` in `server/src/config/env.js`.
+- **Impact**: If the `JWT_SECRET` environment variable was accidentally omitted during deployment, the application would silently use the hardcoded secret. This allows anyone with access to the source code to forge JWT tokens and gain unauthorized access.
+- **Fix**: Modified `getJwtSecret` to explicitly check if `process.env.NODE_ENV === 'production'` and `!process.env.JWT_SECRET`, throwing a critical error instead of using the fallback.
