@@ -18,19 +18,85 @@ describe('Messaging App REST API Contract Tests', () => {
     expect(res.body.status).toBe('ok');
   });
 
+  describe('POST /api/register Error Paths', () => {
+    test('fails with missing username or password', async () => {
+      let res = await request(app).post('/api/register').send({ password: 'password' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Username and password are required');
+
+      res = await request(app).post('/api/register').send({ username: 'user' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Username and password are required');
+    });
+
+    test('fails with non-text full name', async () => {
+      const res = await request(app).post('/api/register').send({ username: 'user1', password: 'password', fullName: 123 });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Full name must be text');
+    });
+
+    test('fails with short username', async () => {
+      const res = await request(app).post('/api/register').send({ username: 'ab', password: 'password' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/Username must be at least \d+ characters/);
+    });
+
+    test('fails with long username', async () => {
+      const longUsername = 'a'.repeat(31);
+      const res = await request(app).post('/api/register').send({ username: longUsername, password: 'password' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/Username must be at most \d+ characters/);
+    });
+
+    test('fails with short password', async () => {
+      const res = await request(app).post('/api/register').send({ username: 'user2', password: 'pass' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/Password must be at least \d+ characters/);
+    });
+
+    test('fails with long password', async () => {
+      const longPassword = 'a'.repeat(73);
+      const res = await request(app).post('/api/register').send({ username: 'user2', password: longPassword });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/Password must be at most \d+ characters/);
+    });
+
+    test('fails with long full name', async () => {
+      const longFullName = 'a'.repeat(101);
+      const res = await request(app).post('/api/register').send({ username: 'user3', password: 'password', fullName: longFullName });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/Full name must be at most \d+ characters/);
+    });
+
+    test('fails with duplicate username', async () => {
+      await request(app).post('/api/register').send(testUser);
+      const res = await request(app).post('/api/register').send(testUser);
+      expect(res.statusCode).toBe(409);
+      expect(res.body.error).toBe('Username already exists');
+    });
+  });
+
   test('POST /api/register creates a new user and returns token', async () => {
+    // Generate a fresh test user to avoid conflicts with the duplicate user test
+    const freshTestUser = {
+      ...testUser,
+      username: `freshuser_${Date.now()}`
+    };
+
     const res = await request(app)
       .post('/api/register')
-      .send(testUser);
+      .send(freshTestUser);
 
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty('token');
     expect(res.body.user).toHaveProperty('id');
-    expect(res.body.user.username).toBe(testUser.username.toLowerCase());
+    expect(res.body.user.username).toBe(freshTestUser.username.toLowerCase());
     expect(res.body.user).not.toHaveProperty('password');
 
     token = res.body.token;
     userId = res.body.user.id;
+    // Update the testUser object for subsequent tests (like login)
+    testUser.username = freshTestUser.username;
   });
 
   test('POST /api/login authenticates registered user', async () => {
