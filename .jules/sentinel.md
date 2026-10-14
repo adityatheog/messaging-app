@@ -1,0 +1,1 @@
+* **CORS Security**: Ensure CORS configuration in `server/src/index.js` explicitly rejects unknown origins. Avoid using wildcard bypasses `allowedOrigins.includes('*')` when `credentials: true` is enabled, and never use a default `callback(null, true)` fallback in dynamic origin functions as it completely bypasses the security intent.
