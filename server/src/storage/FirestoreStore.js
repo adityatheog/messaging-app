@@ -182,18 +182,54 @@ class FirestoreStore extends Store {
   async getConversations(userId) {
     await this.initialize();
     const otherUsers = (await this.getUsers()).filter((u) => u.id !== userId);
+    const otherUsersMap = new Map(otherUsers.map((u) => [u.id, u]));
+
+    const [sentSnap, receivedSnap] = await Promise.all([
+      this.db.collection('messages').where('senderId', '==', userId).get(),
+      this.db.collection('messages').where('receiverId', '==', userId).get()
+    ]);
+
+    const messages = [];
+    const seenMsgs = new Set();
+
+    const addMsgs = (snap) => {
+      snap.docs.forEach((doc) => {
+        if (!seenMsgs.has(doc.id)) {
+          seenMsgs.add(doc.id);
+          messages.push({ id: doc.id, ...doc.data() });
+        }
+      });
+    };
+
+    addMsgs(sentSnap);
+    addMsgs(receivedSnap);
+
+    const conversationsMap = new Map();
+
+    for (const msg of messages) {
+      const otherId = msg.senderId === userId ? msg.receiverId : msg.senderId;
+      if (!conversationsMap.has(otherId)) {
+        conversationsMap.set(otherId, []);
+      }
+      conversationsMap.get(otherId).push(msg);
+    }
+
     const conversations = [];
 
-    for (const other of otherUsers) {
-      const msgs = await this.getMessagesBetween(userId, other.id);
+    for (const [otherId, msgs] of conversationsMap.entries()) {
+      const otherUser = otherUsersMap.get(otherId);
+      if (!otherUser) continue;
+
+      msgs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
       const lastMessage = msgs.length > 0 ? msgs[msgs.length - 1] : null;
       const unreadCount = msgs.filter(
-        (m) => m.senderId === other.id && m.receiverId === userId && !m.read
+        (m) => m.senderId === otherId && m.receiverId === userId && !m.read
       ).length;
 
       if (lastMessage) {
         conversations.push({
-          user: other,
+          user: otherUser,
           lastMessage,
           unreadCount,
           updatedAt: lastMessage.timestamp
