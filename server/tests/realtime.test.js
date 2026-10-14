@@ -2,7 +2,7 @@ const http = require('http');
 const request = require('supertest');
 const { io: Client } = require('socket.io-client');
 const { app } = require('../src/index');
-const { initSockets } = require('../src/sockets');
+const { initSockets, clearPresenceTimers } = require('../src/sockets');
 const { getStore } = require('../src/storage');
 
 describe('Socket.IO Real-time & Idempotency Integration Tests', () => {
@@ -26,6 +26,7 @@ describe('Socket.IO Real-time & Idempotency Integration Tests', () => {
   });
 
   afterAll((done) => {
+    clearPresenceTimers();
     if (io) {
       io.close();
     }
@@ -123,14 +124,27 @@ describe('Socket.IO Real-time & Idempotency Integration Tests', () => {
       }
     });
 
-    clientAlice.on('connect', () => {
-      clientBob.on('connect', () => {
+    let aliceReady = false;
+    let bobReady = false;
+
+    const trySend = () => {
+      if (aliceReady && bobReady) {
         clientAlice.emit('message:send', {
           receiverId: bobId,
           content: 'Realtime test message from Alice',
           clientMsgId: `cid-${Date.now()}`
         });
-      });
+      }
+    };
+
+    clientAlice.on('connect', () => {
+      aliceReady = true;
+      trySend();
+    });
+
+    clientBob.on('connect', () => {
+      bobReady = true;
+      trySend();
     });
   });
 

@@ -4,10 +4,17 @@ const { v4: uuidv4 } = require('uuid');
 const { getJwtSecret, getCorsOrigins } = require('../config/env');
 const { getStore } = require('../storage');
 
-// User presence tracking (multi-device & multi-tab safe)
 const userSockets = new Map(); // userId -> Set<socketId>
 const disconnectTimers = new Map(); // userId -> TimeoutId
-const PRESENCE_GRACE_PERIOD_MS = 15000;
+const PRESENCE_GRACE_PERIOD_MS = process.env.NODE_ENV === 'test' ? 50 : 15000;
+
+const clearPresenceTimers = () => {
+  for (const timer of disconnectTimers.values()) {
+    clearTimeout(timer);
+  }
+  disconnectTimers.clear();
+  userSockets.clear();
+};
 
 let ioInstance = null;
 
@@ -188,5 +195,6 @@ const getIo = () => ioInstance;
 
 module.exports = {
   initSockets,
-  getIo
+  getIo,
+  clearPresenceTimers
 };

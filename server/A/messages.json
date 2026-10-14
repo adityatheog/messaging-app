@@ -475,5 +475,107 @@
     "content": "Hello Sarah from supertest suite!",
     "timestamp": "2026-10-14T10:42:33.420Z",
     "read": false
+  },
+  {
+    "id": "unique-idempotent-1791975096104",
+    "clientMsgId": "unique-idempotent-1791975096104",
+    "senderId": "4db48959-a115-4772-aca7-2233bed26563",
+    "receiverId": "3f81988d-2295-4948-85b8-ce658d8cb70e",
+    "content": "Idempotency test payload",
+    "timestamp": "2026-10-14T10:51:36.113Z",
+    "read": false
+  },
+  {
+    "id": "p1-1791975096153",
+    "senderId": "4db48959-a115-4772-aca7-2233bed26563",
+    "receiverId": "3f81988d-2295-4948-85b8-ce658d8cb70e",
+    "content": "Page msg 1",
+    "timestamp": "2026-10-14T10:51:33.153Z",
+    "read": false
+  },
+  {
+    "id": "p2-1791975096155",
+    "senderId": "4db48959-a115-4772-aca7-2233bed26563",
+    "receiverId": "3f81988d-2295-4948-85b8-ce658d8cb70e",
+    "content": "Page msg 2",
+    "timestamp": "2026-10-14T10:51:34.155Z",
+    "read": false
+  },
+  {
+    "id": "p3-1791975096157",
+    "senderId": "4db48959-a115-4772-aca7-2233bed26563",
+    "receiverId": "3f81988d-2295-4948-85b8-ce658d8cb70e",
+    "content": "Page msg 3",
+    "timestamp": "2026-10-14T10:51:35.157Z",
+    "read": false
+  },
+  {
+    "id": "33081a74-188d-4a54-9b40-3039ebedd25f",
+    "clientMsgId": null,
+    "senderId": "6efc3c84-d13f-43f5-bf6b-6c1b678eebf5",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T10:51:36.814Z",
+    "read": false
+  },
+  {
+    "id": "30387ef7-f4c1-473b-9c94-6db371530633",
+    "clientMsgId": null,
+    "senderId": "692bafaf-1953-4160-afb0-dc2a0bf8fd2b",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T10:53:02.327Z",
+    "read": false
+  },
+  {
+    "id": "860305a0-5622-4552-b332-13340cf52d13",
+    "clientMsgId": null,
+    "senderId": "6018265e-f924-47b7-91fd-dd35e61f2d01",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T10:53:23.476Z",
+    "read": false
+  },
+  {
+    "id": "cid-1791975204734",
+    "clientMsgId": "cid-1791975204734",
+    "senderId": "6db81b57-6c43-480b-8ad8-8f23174b19d9",
+    "receiverId": "a6c376e3-82af-4ad9-8e7c-14cf6ad87f2e",
+    "content": "Realtime test message from Alice",
+    "timestamp": "2026-10-14T10:53:24.736Z",
+    "read": false
+  },
+  {
+    "id": "unique-idempotent-1791975204747",
+    "clientMsgId": "unique-idempotent-1791975204747",
+    "senderId": "6db81b57-6c43-480b-8ad8-8f23174b19d9",
+    "receiverId": "a6c376e3-82af-4ad9-8e7c-14cf6ad87f2e",
+    "content": "Idempotency test payload",
+    "timestamp": "2026-10-14T10:53:24.766Z",
+    "read": false
+  },
+  {
+    "id": "p1-1791975204795",
+    "senderId": "6db81b57-6c43-480b-8ad8-8f23174b19d9",
+    "receiverId": "a6c376e3-82af-4ad9-8e7c-14cf6ad87f2e",
+    "content": "Page msg 1",
+    "timestamp": "2026-10-14T10:53:21.795Z",
+    "read": false
+  },
+  {
+    "id": "p2-1791975204798",
+    "senderId": "6db81b57-6c43-480b-8ad8-8f23174b19d9",
+    "receiverId": "a6c376e3-82af-4ad9-8e7c-14cf6ad87f2e",
+    "content": "Page msg 2",
+    "timestamp": "2026-10-14T10:53:22.798Z",
+    "read": false
+  },
+  {
+    "id": "p3-1791975204799",
+    "senderId": "6db81b57-6c43-480b-8ad8-8f23174b19d9",
+    "receiverId": "a6c376e3-82af-4ad9-8e7c-14cf6ad87f2e",
+    "content": "Page msg 3",
+    "timestamp": "2026-10-14T10:53:23.800Z",
+    "read": false
   }
 ]
