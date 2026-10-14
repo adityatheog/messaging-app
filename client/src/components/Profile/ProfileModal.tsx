@@ -127,7 +127,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
 
               {success && (
                 <div className="alert alert-success py-2 small mb-0">
-                  Profile updated successfully!
+                  You're all set.
                 </div>
               )}
             </div>

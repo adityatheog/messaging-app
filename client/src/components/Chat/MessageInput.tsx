@@ -55,7 +55,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
 
   const handleSendVoice = async () => {
     setSending(true);
-    await onSendMessage('🎤 Encrypted voice note', 'VOICE');
+    await onSendMessage('Voice message', 'VOICE');
     setSending(false);
   };
 
@@ -63,9 +63,9 @@ export const MessageInput: React.FC<MessageInputProps> = ({
     setShowAttachMenu(false);
     setSending(true);
     if (type === 'IMAGE') {
-      await onSendMessage('📷 Encrypted photo attachment', 'IMAGE', 'Photo_E2EE.jpg');
+      await onSendMessage('Photo', 'IMAGE', 'Photo.jpg');
     } else {
-      await onSendMessage('📄 Encrypted protocol document', 'DOCUMENT', 'Security_Spec.pdf');
+      await onSendMessage('Document', 'DOCUMENT', 'Document.pdf');
     }
     setSending(false);
   };

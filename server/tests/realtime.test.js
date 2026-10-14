@@ -13,9 +13,11 @@ describe('Socket.IO Real-time & Idempotency Integration Tests', () => {
   let aliceId;
   let bobId;
 
+  let io;
+
   beforeAll((done) => {
     server = http.createServer(app);
-    initSockets(server);
+    io = initSockets(server);
     server.listen(0, () => {
       const port = server.address().port;
       socketUrl = `http://localhost:${port}`;
@@ -24,6 +26,9 @@ describe('Socket.IO Real-time & Idempotency Integration Tests', () => {
   });
 
   afterAll((done) => {
+    if (io) {
+      io.close();
+    }
     server.close(done);
   });
 

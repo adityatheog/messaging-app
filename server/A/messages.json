@@ -169,5 +169,311 @@
     "content": "Page msg 3",
     "timestamp": "2026-10-14T00:43:51.457Z",
     "read": false
+  },
+  {
+    "id": "cid-1791973596009",
+    "clientMsgId": "cid-1791973596009",
+    "senderId": "c66bb3fe-a929-4355-afc2-d8f6f52574a8",
+    "receiverId": "82943943-8d20-4818-8182-e38887066d79",
+    "content": "Realtime test message from Alice",
+    "timestamp": "2026-10-14T10:26:36.011Z",
+    "read": false
+  },
+  {
+    "id": "unique-idempotent-1791973596021",
+    "clientMsgId": "unique-idempotent-1791973596021",
+    "senderId": "c66bb3fe-a929-4355-afc2-d8f6f52574a8",
+    "receiverId": "82943943-8d20-4818-8182-e38887066d79",
+    "content": "Idempotency test payload",
+    "timestamp": "2026-10-14T10:26:36.043Z",
+    "read": false
+  },
+  {
+    "id": "p1-1791973596083",
+    "senderId": "c66bb3fe-a929-4355-afc2-d8f6f52574a8",
+    "receiverId": "82943943-8d20-4818-8182-e38887066d79",
+    "content": "Page msg 1",
+    "timestamp": "2026-10-14T10:26:33.083Z",
+    "read": false
+  },
+  {
+    "id": "p2-1791973596085",
+    "senderId": "c66bb3fe-a929-4355-afc2-d8f6f52574a8",
+    "receiverId": "82943943-8d20-4818-8182-e38887066d79",
+    "content": "Page msg 2",
+    "timestamp": "2026-10-14T10:26:34.085Z",
+    "read": false
+  },
+  {
+    "id": "p3-1791973596087",
+    "senderId": "c66bb3fe-a929-4355-afc2-d8f6f52574a8",
+    "receiverId": "82943943-8d20-4818-8182-e38887066d79",
+    "content": "Page msg 3",
+    "timestamp": "2026-10-14T10:26:35.087Z",
+    "read": false
+  },
+  {
+    "id": "68083a19-ebad-4268-b09f-af5d4a55b8b7",
+    "clientMsgId": null,
+    "senderId": "48e13935-ef56-4df1-bbb8-4fb9c76cefc7",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T10:26:36.750Z",
+    "read": false
+  },
+  {
+    "id": "cid-1791973729349",
+    "clientMsgId": "cid-1791973729349",
+    "senderId": "32cfd718-1453-4d34-8196-d564ec20af3a",
+    "receiverId": "a3ad8bb6-df21-4e70-9a4c-bc203a95bd5e",
+    "content": "Realtime test message from Alice",
+    "timestamp": "2026-10-14T10:28:49.352Z",
+    "read": false
+  },
+  {
+    "id": "unique-idempotent-1791973729361",
+    "clientMsgId": "unique-idempotent-1791973729361",
+    "senderId": "32cfd718-1453-4d34-8196-d564ec20af3a",
+    "receiverId": "a3ad8bb6-df21-4e70-9a4c-bc203a95bd5e",
+    "content": "Idempotency test payload",
+    "timestamp": "2026-10-14T10:28:49.378Z",
+    "read": false
+  },
+  {
+    "id": "p1-1791973729418",
+    "senderId": "32cfd718-1453-4d34-8196-d564ec20af3a",
+    "receiverId": "a3ad8bb6-df21-4e70-9a4c-bc203a95bd5e",
+    "content": "Page msg 1",
+    "timestamp": "2026-10-14T10:28:46.418Z",
+    "read": false
+  },
+  {
+    "id": "p2-1791973729421",
+    "senderId": "32cfd718-1453-4d34-8196-d564ec20af3a",
+    "receiverId": "a3ad8bb6-df21-4e70-9a4c-bc203a95bd5e",
+    "content": "Page msg 2",
+    "timestamp": "2026-10-14T10:28:47.421Z",
+    "read": false
+  },
+  {
+    "id": "p3-1791973729423",
+    "senderId": "32cfd718-1453-4d34-8196-d564ec20af3a",
+    "receiverId": "a3ad8bb6-df21-4e70-9a4c-bc203a95bd5e",
+    "content": "Page msg 3",
+    "timestamp": "2026-10-14T10:28:48.423Z",
+    "read": false
+  },
+  {
+    "id": "43d276fe-163f-4e69-bf29-c5253eb6cdf4",
+    "clientMsgId": null,
+    "senderId": "eddf4e02-a2b8-47fd-997e-2f1722495840",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T10:28:50.045Z",
+    "read": false
+  },
+  {
+    "id": "cid-1791974121626",
+    "clientMsgId": "cid-1791974121626",
+    "senderId": "56928994-30a6-47c5-a173-efa96ec27f31",
+    "receiverId": "5efde81e-f753-4c18-9266-b48a51bec23e",
+    "content": "Realtime test message from Alice",
+    "timestamp": "2026-10-14T10:35:21.628Z",
+    "read": false
+  },
+  {
+    "id": "unique-idempotent-1791974121638",
+    "clientMsgId": "unique-idempotent-1791974121638",
+    "senderId": "56928994-30a6-47c5-a173-efa96ec27f31",
+    "receiverId": "5efde81e-f753-4c18-9266-b48a51bec23e",
+    "content": "Idempotency test payload",
+    "timestamp": "2026-10-14T10:35:21.653Z",
+    "read": false
+  },
+  {
+    "id": "p1-1791974121693",
+    "senderId": "56928994-30a6-47c5-a173-efa96ec27f31",
+    "receiverId": "5efde81e-f753-4c18-9266-b48a51bec23e",
+    "content": "Page msg 1",
+    "timestamp": "2026-10-14T10:35:18.693Z",
+    "read": false
+  },
+  {
+    "id": "p2-1791974121695",
+    "senderId": "56928994-30a6-47c5-a173-efa96ec27f31",
+    "receiverId": "5efde81e-f753-4c18-9266-b48a51bec23e",
+    "content": "Page msg 2",
+    "timestamp": "2026-10-14T10:35:19.695Z",
+    "read": false
+  },
+  {
+    "id": "p3-1791974121698",
+    "senderId": "56928994-30a6-47c5-a173-efa96ec27f31",
+    "receiverId": "5efde81e-f753-4c18-9266-b48a51bec23e",
+    "content": "Page msg 3",
+    "timestamp": "2026-10-14T10:35:20.698Z",
+    "read": false
+  },
+  {
+    "id": "32b0edc9-ebb3-4eca-9012-958c39b87646",
+    "clientMsgId": null,
+    "senderId": "1cb73b37-9ffa-45c8-be52-a0be9863b20a",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T10:35:22.351Z",
+    "read": false
+  },
+  {
+    "id": "cid-1791974193614",
+    "clientMsgId": "cid-1791974193614",
+    "senderId": "351db20f-2a26-4679-8824-dab6f38feaa5",
+    "receiverId": "f7641d63-ee93-4d9d-bee8-27090f3c3eaa",
+    "content": "Realtime test message from Alice",
+    "timestamp": "2026-10-14T10:36:33.617Z",
+    "read": false
+  },
+  {
+    "id": "unique-idempotent-1791974193628",
+    "clientMsgId": "unique-idempotent-1791974193628",
+    "senderId": "351db20f-2a26-4679-8824-dab6f38feaa5",
+    "receiverId": "f7641d63-ee93-4d9d-bee8-27090f3c3eaa",
+    "content": "Idempotency test payload",
+    "timestamp": "2026-10-14T10:36:33.645Z",
+    "read": false
+  },
+  {
+    "id": "p1-1791974193684",
+    "senderId": "351db20f-2a26-4679-8824-dab6f38feaa5",
+    "receiverId": "f7641d63-ee93-4d9d-bee8-27090f3c3eaa",
+    "content": "Page msg 1",
+    "timestamp": "2026-10-14T10:36:30.684Z",
+    "read": false
+  },
+  {
+    "id": "p2-1791974193687",
+    "senderId": "351db20f-2a26-4679-8824-dab6f38feaa5",
+    "receiverId": "f7641d63-ee93-4d9d-bee8-27090f3c3eaa",
+    "content": "Page msg 2",
+    "timestamp": "2026-10-14T10:36:31.687Z",
+    "read": false
+  },
+  {
+    "id": "p3-1791974193689",
+    "senderId": "351db20f-2a26-4679-8824-dab6f38feaa5",
+    "receiverId": "f7641d63-ee93-4d9d-bee8-27090f3c3eaa",
+    "content": "Page msg 3",
+    "timestamp": "2026-10-14T10:36:32.689Z",
+    "read": false
+  },
+  {
+    "id": "3f995b04-cd8b-48fb-8abd-8f7fa403e865",
+    "clientMsgId": null,
+    "senderId": "1dc1ffa5-64b2-4d5d-9e80-3868c9b625b1",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T10:36:34.384Z",
+    "read": false
+  },
+  {
+    "id": "cid-1791974224199",
+    "clientMsgId": "cid-1791974224199",
+    "senderId": "b3784a1e-6a86-4e63-a138-8a99e59f9db7",
+    "receiverId": "49334488-d4c2-4b6c-b27b-91b85f81d8fd",
+    "content": "Realtime test message from Alice",
+    "timestamp": "2026-10-14T10:37:04.201Z",
+    "read": false
+  },
+  {
+    "id": "unique-idempotent-1791974224212",
+    "clientMsgId": "unique-idempotent-1791974224212",
+    "senderId": "b3784a1e-6a86-4e63-a138-8a99e59f9db7",
+    "receiverId": "49334488-d4c2-4b6c-b27b-91b85f81d8fd",
+    "content": "Idempotency test payload",
+    "timestamp": "2026-10-14T10:37:04.230Z",
+    "read": false
+  },
+  {
+    "id": "p1-1791974224271",
+    "senderId": "b3784a1e-6a86-4e63-a138-8a99e59f9db7",
+    "receiverId": "49334488-d4c2-4b6c-b27b-91b85f81d8fd",
+    "content": "Page msg 1",
+    "timestamp": "2026-10-14T10:37:01.271Z",
+    "read": false
+  },
+  {
+    "id": "p2-1791974224273",
+    "senderId": "b3784a1e-6a86-4e63-a138-8a99e59f9db7",
+    "receiverId": "49334488-d4c2-4b6c-b27b-91b85f81d8fd",
+    "content": "Page msg 2",
+    "timestamp": "2026-10-14T10:37:02.273Z",
+    "read": false
+  },
+  {
+    "id": "p3-1791974224274",
+    "senderId": "b3784a1e-6a86-4e63-a138-8a99e59f9db7",
+    "receiverId": "49334488-d4c2-4b6c-b27b-91b85f81d8fd",
+    "content": "Page msg 3",
+    "timestamp": "2026-10-14T10:37:03.274Z",
+    "read": false
+  },
+  {
+    "id": "c0773980-b722-4eba-9768-7f43a2c5d8f4",
+    "clientMsgId": null,
+    "senderId": "eb1a624c-707b-4912-ba3b-e1ad94f1a55c",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T10:37:04.890Z",
+    "read": false
+  },
+  {
+    "id": "cid-1791974552614",
+    "clientMsgId": "cid-1791974552614",
+    "senderId": "35108f14-c6eb-450b-bd02-301b552feb2c",
+    "receiverId": "0caf3b0c-d517-4f15-a793-f4e8f03a7745",
+    "content": "Realtime test message from Alice",
+    "timestamp": "2026-10-14T10:42:32.616Z",
+    "read": false
+  },
+  {
+    "id": "unique-idempotent-1791974552628",
+    "clientMsgId": "unique-idempotent-1791974552628",
+    "senderId": "35108f14-c6eb-450b-bd02-301b552feb2c",
+    "receiverId": "0caf3b0c-d517-4f15-a793-f4e8f03a7745",
+    "content": "Idempotency test payload",
+    "timestamp": "2026-10-14T10:42:32.648Z",
+    "read": false
+  },
+  {
+    "id": "p1-1791974552705",
+    "senderId": "35108f14-c6eb-450b-bd02-301b552feb2c",
+    "receiverId": "0caf3b0c-d517-4f15-a793-f4e8f03a7745",
+    "content": "Page msg 1",
+    "timestamp": "2026-10-14T10:42:29.705Z",
+    "read": false
+  },
+  {
+    "id": "p2-1791974552711",
+    "senderId": "35108f14-c6eb-450b-bd02-301b552feb2c",
+    "receiverId": "0caf3b0c-d517-4f15-a793-f4e8f03a7745",
+    "content": "Page msg 2",
+    "timestamp": "2026-10-14T10:42:30.711Z",
+    "read": false
+  },
+  {
+    "id": "p3-1791974552714",
+    "senderId": "35108f14-c6eb-450b-bd02-301b552feb2c",
+    "receiverId": "0caf3b0c-d517-4f15-a793-f4e8f03a7745",
+    "content": "Page msg 3",
+    "timestamp": "2026-10-14T10:42:31.714Z",
+    "read": false
+  },
+  {
+    "id": "28c1b47f-1a3e-4a0b-b063-2cf33307b617",
+    "clientMsgId": null,
+    "senderId": "aed4cc13-a623-4ed1-9788-e8bb40508667",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T10:42:33.420Z",
+    "read": false
   }
 ]

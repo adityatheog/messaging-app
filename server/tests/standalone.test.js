@@ -1,46 +1,44 @@
-const test = require('node:test');
-const assert = require('node:assert');
 const path = require('node:path');
 const fs = require('node:fs').promises;
 const JsonStore = require('../src/storage/JsonStore');
 
-test('SimpleLink Backend JsonStore Integration & Cryptographic Privacy Audit', async (t) => {
+describe('SimpleLink Backend JsonStore Integration & Cryptographic Privacy Audit', () => {
   const testDir = path.join(__dirname, '../data_test_' + Date.now());
   const store = new JsonStore({ dataDir: testDir, presenceTimeout: 5000 });
 
-  await t.test('Initializes schema and seeds demo users', async () => {
-    await store.initialize();
-    const users = await store.getUsers();
-    assert.ok(users.length >= 4, 'Should have at least 4 default contacts seeded');
-    const sarah = users.find(u => u.username === 'sarah_j');
-    assert.ok(sarah, 'Sarah Jenkins should exist');
-    assert.strictEqual(sarah.isOnline, true, 'Seeded user should be marked online');
+  afterAll(async () => {
+    await fs.rm(testDir, { recursive: true, force: true }).catch(() => {});
   });
 
-  await t.test('Creates new user and prevents duplicate usernames', async () => {
+  test('Initializes schema and seeds demo users', async () => {
+    await store.initialize();
+    const users = await store.getUsers();
+    expect(users.length).toBeGreaterThanOrEqual(4);
+    const sarah = users.find(u => u.username === 'sarah_j');
+    expect(sarah).toBeDefined();
+    expect(sarah.isOnline).toBe(true);
+  });
+
+  test('Creates new user and prevents duplicate usernames', async () => {
     const newUser = await store.createUser({
       id: 'test-user-1',
       username: 'Alice_Test',
       password: 'hashedPassword',
       fullName: 'Alice Test'
     });
-    assert.strictEqual(newUser.id, 'test-user-1');
+    expect(newUser.id).toBe('test-user-1');
 
-    await assert.rejects(
-      async () => {
-        await store.createUser({
-          id: 'test-user-2',
-          username: 'alice_test',
-          password: 'hashedPassword',
-          fullName: 'Alice Duplicate'
-        });
-      },
-      /already exists/i,
-      'Should reject case-insensitive duplicate username'
-    );
+    await expect(
+      store.createUser({
+        id: 'test-user-2',
+        username: 'alice_test',
+        password: 'hashedPassword',
+        fullName: 'Alice Duplicate'
+      })
+    ).rejects.toThrow(/already exists/i);
   });
 
-  await t.test('Creates and retrieves message with clientMsgId idempotency', async () => {
+  test('Creates and retrieves message with clientMsgId idempotency', async () => {
     const msgData = {
       id: 'msg-audit-1',
       clientMsgId: 'client-audit-1',
@@ -52,26 +50,24 @@ test('SimpleLink Backend JsonStore Integration & Cryptographic Privacy Audit', a
     };
 
     const created = await store.createMessage(msgData);
-    assert.strictEqual(created.id, 'msg-audit-1');
+    expect(created.id).toBe('msg-audit-1');
 
     // Idempotency test
     const duplicate = await store.findMessageByClientMsgId('test-user-1', 'client-audit-1');
-    assert.ok(duplicate, 'Should find existing message by clientMsgId');
-    assert.strictEqual(duplicate.id, 'msg-audit-1');
+    expect(duplicate).toBeDefined();
+    expect(duplicate.id).toBe('msg-audit-1');
 
     const conversation = await store.getMessagesBetween('test-user-1', 'user-sarah');
-    assert.strictEqual(conversation.length, 1);
-    assert.strictEqual(conversation[0].content, 'ENC:test_encrypted_payload_simplex_channel');
+    expect(conversation.length).toBe(1);
+    expect(conversation[0].content).toBe('ENC:test_encrypted_payload_simplex_channel');
   });
 
-  await t.test('Marks messages as read', async () => {
+  test('Marks messages as read', async () => {
     const marked = await store.markMessagesAsRead('test-user-1', 'user-sarah');
-    assert.strictEqual(marked, true, 'Should mark message as read');
+    expect(marked).toBe(true);
 
     const conversation = await store.getMessagesBetween('test-user-1', 'user-sarah');
-    assert.strictEqual(conversation[0].read, true, 'Message read status should now be true');
+    expect(conversation[0].read).toBe(true);
   });
-
-  // Cleanup
-  await fs.rm(testDir, { recursive: true, force: true }).catch(() => {});
 });
+

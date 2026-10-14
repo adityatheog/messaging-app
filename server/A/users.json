@@ -110,5 +110,149 @@
     "fullName": "Bob Realtime",
     "avatarColor": "#5e72e4",
     "createdAt": "2026-10-14T00:43:52.288Z"
+  },
+  {
+    "id": "c66bb3fe-a929-4355-afc2-d8f6f52574a8",
+    "username": "alice_rt_1791973595622",
+    "password": "$2a$10$UYQ.ZFWTzkem3iH2FPFgYuiqtvS2gkcRVvzHy9vzM6bJDMuC5YnYS",
+    "fullName": "Alice Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:26:35.775Z"
+  },
+  {
+    "id": "82943943-8d20-4818-8182-e38887066d79",
+    "username": "bob_rt_1791973595792",
+    "password": "$2a$10$Cxs45riwMYUtIs1MZnFDBestZxf9k0lxTZjoS7BuRHUxZmmyP5.gC",
+    "fullName": "Bob Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:26:35.892Z"
+  },
+  {
+    "id": "48e13935-ef56-4df1-bbb8-4fb9c76cefc7",
+    "username": "testuser_1791973596448",
+    "password": "$2a$10$CHnM42X2pme8Wb9As2aa9.A8.w21yap0WIhX/iFQvbfKohZhuUM4C",
+    "fullName": "Test User",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:26:36.587Z"
+  },
+  {
+    "id": "32cfd718-1453-4d34-8196-d564ec20af3a",
+    "username": "alice_rt_1791973728923",
+    "password": "$2a$10$rM6Zl0f13QA/g2/obaa45OWHa6KplW3SDlA3nA1.IOQAbss.FRUjG",
+    "fullName": "Alice Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:28:49.098Z"
+  },
+  {
+    "id": "a3ad8bb6-df21-4e70-9a4c-bc203a95bd5e",
+    "username": "bob_rt_1791973729114",
+    "password": "$2a$10$QkL4u/jBffec6/hkSTuSsORwFJlIvNe0iiImO3f6Tt13w3c8dDDMK",
+    "fullName": "Bob Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:28:49.223Z"
+  },
+  {
+    "id": "eddf4e02-a2b8-47fd-997e-2f1722495840",
+    "username": "testuser_1791973729746",
+    "password": "$2a$10$w7hmWWVuiymrlbum3u7uP.iMbtpYLVv80jOMFp/9Oit6KDkdQ0zv2",
+    "fullName": "Test User",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:28:49.884Z"
+  },
+  {
+    "id": "56928994-30a6-47c5-a173-efa96ec27f31",
+    "username": "alice_rt_1791974121192",
+    "password": "$2a$10$LNJXRbXz6qYuRR0Ebmon4eoKpXm.imPivoPCNENSH3v8s1Wlar8vy",
+    "fullName": "Alice Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:35:21.367Z"
+  },
+  {
+    "id": "5efde81e-f753-4c18-9266-b48a51bec23e",
+    "username": "bob_rt_1791974121387",
+    "password": "$2a$10$4s.3QUL0tWxC40yQdx9TJu6OHIJsdkzE2mH3qVqUkepjjqkb4fxWi",
+    "fullName": "Bob Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:35:21.496Z"
+  },
+  {
+    "id": "1cb73b37-9ffa-45c8-be52-a0be9863b20a",
+    "username": "testuser_1791974122042",
+    "password": "$2a$10$AaV.begyVAeJi1K3olHOfOMY6cI4PteQOUh0XIFe7oFPnrIzw68pC",
+    "fullName": "Test User",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:35:22.189Z"
+  },
+  {
+    "id": "351db20f-2a26-4679-8824-dab6f38feaa5",
+    "username": "alice_rt_1791974193161",
+    "password": "$2a$10$Pm6Wo5zlAU54GoleND4s8OOL/98weMSIoHQrgzLviNJFTyIwrYyyq",
+    "fullName": "Alice Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:36:33.337Z"
+  },
+  {
+    "id": "f7641d63-ee93-4d9d-bee8-27090f3c3eaa",
+    "username": "bob_rt_1791974193362",
+    "password": "$2a$10$KMvusnKbF5k5Z/VmhJcqNuAZ.ZRavsL7CSjAy8hhFO.WnfusIO9WC",
+    "fullName": "Bob Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:36:33.481Z"
+  },
+  {
+    "id": "1dc1ffa5-64b2-4d5d-9e80-3868c9b625b1",
+    "username": "testuser_1791974194058",
+    "password": "$2a$10$VnX6utyfUnszVJNRtt7AkuU2C9eDnIFuCvRPTzAZwUbbL2.L9QnBK",
+    "fullName": "Test User",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:36:34.207Z"
+  },
+  {
+    "id": "b3784a1e-6a86-4e63-a138-8a99e59f9db7",
+    "username": "alice_rt_1791974223789",
+    "password": "$2a$10$Lknu33YvRLe0J1av9f4bFO.kmxBx3PMDQJRAZPoy.k4QXeUAAptgK",
+    "fullName": "Alice Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:37:03.950Z"
+  },
+  {
+    "id": "49334488-d4c2-4b6c-b27b-91b85f81d8fd",
+    "username": "bob_rt_1791974223968",
+    "password": "$2a$10$V4gFiBlGHdTBKIcnpbtd6OlezqPNqzSuIy8Ozwvp7AciKUvrIWali",
+    "fullName": "Bob Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:37:04.072Z"
+  },
+  {
+    "id": "eb1a624c-707b-4912-ba3b-e1ad94f1a55c",
+    "username": "testuser_1791974224596",
+    "password": "$2a$10$hm2GqfGihe1iYpzI0Kyyj..0qPC7qnQaYPeUvijDoweopCDEFDuZu",
+    "fullName": "Test User",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:37:04.729Z"
+  },
+  {
+    "id": "35108f14-c6eb-450b-bd02-301b552feb2c",
+    "username": "alice_rt_1791974552184",
+    "password": "$2a$10$53Aloor9yt21dYPEVt4km.57CQAFwsqZFeBHxdjQR1xdkF5fKlYB.",
+    "fullName": "Alice Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:42:32.350Z"
+  },
+  {
+    "id": "0caf3b0c-d517-4f15-a793-f4e8f03a7745",
+    "username": "bob_rt_1791974552369",
+    "password": "$2a$10$Y/Jj46MUxjbV2hgAyQrTVOcXePUrQaMDSGLa//HTTyoZC/CafWQ6a",
+    "fullName": "Bob Realtime",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:42:32.474Z"
+  },
+  {
+    "id": "aed4cc13-a623-4ed1-9788-e8bb40508667",
+    "username": "testuser_1791974553080",
+    "password": "$2a$10$CUQQZTUNEFilRatjoIEE2O.cKLOpNv2z2x8xYpTlt0nYGP0gZUjOa",
+    "fullName": "Test User",
+    "avatarColor": "#5e72e4",
+    "createdAt": "2026-10-14T10:42:33.241Z"
   }
 ]

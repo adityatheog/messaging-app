@@ -6,8 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,8 +45,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -91,7 +87,6 @@ import com.example.ui.theme.Emerald600
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChatPane(
     currentUser: User,
@@ -437,28 +432,6 @@ fun ChatPane(
             }
         }
 
-        // Quick Suggestion Chips
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 3.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            val suggestions = listOf("Safety number verified ✅", "Let's review the protocol spec", "Audio call now? 📞")
-            suggestions.forEach { prompt ->
-                FilterChip(
-                    selected = false,
-                    onClick = { onSendMessage(prompt) },
-                    label = { Text(prompt, fontSize = 11.sp) },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = FilterChipDefaults.filterChipColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    )
-                )
-            }
-        }
-
         // Bottom Input Bar
         Surface(
             color = MaterialTheme.colorScheme.surface,
@@ -555,7 +528,7 @@ fun ChatPane(
                                 leadingIcon = { Icon(Icons.Default.Description, contentDescription = null, tint = Emerald500) },
                                 onClick = {
                                     showAttachmentMenu = false
-                                    onSendAttachment("DOCUMENT", "Protocol_Spec.pdf", 1200000L, "")
+                                    onSendAttachment("DOCUMENT", "Document.pdf", 1200000L, "")
                                 }
                             )
                             DropdownMenuItem(
