@@ -123,13 +123,13 @@ fun ConnectionsPane(
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
                         Text(
-                            text = "SimpleX Pairwise Protocol",
+                            text = "Invite & Connect",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "No user IDs at the network layer. Isolated queues.",
+                            text = "Share your invite link to start a direct, encrypted chat.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -139,7 +139,7 @@ fun ConnectionsPane(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 Text(
-                    text = "My Pairwise Broker Address:",
+                    text = "Your Connection Link:",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

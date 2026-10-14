@@ -75,11 +75,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <div>
               <div className="d-flex align-items-center">
-                <span className="font-weight-bold text-white d-block text-truncate" style={{ maxWidth: '130px' }}>
+                <span className="font-weight-bold text-white d-block text-truncate" style={{ maxWidth: '160px' }}>
                   {user.fullName || user.username}
-                </span>
-                <span className="badge-simplex ml-2" style={{ fontSize: '0.68rem', padding: '1px 5px' }}>
-                  E2EE
                 </span>
               </div>
               <small className="text-muted">@{user.username}</small>
@@ -113,10 +110,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="form-control form-control-sm pl-4"
             placeholder={
               activeTab === 'chats'
-                ? 'Search conversations...'
+                ? 'Search chats...'
                 : activeTab === 'people'
-                ? 'Search teammates...'
-                : 'Search safety numbers...'
+                ? 'Search contacts...'
+                : 'Search...'
             }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -135,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* Tabs: Chats, People, Connections */}
+      {/* Tabs: Chats, People, Invite */}
       <div className="d-flex border-bottom" style={{ backgroundColor: '#161b22', borderColor: '#30363d' }}>
         <button
           type="button"
@@ -174,8 +171,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }`}
           style={{ borderBottomWidth: activeTab === 'connections' ? '2px' : '0' }}
         >
-          <Shield size={14} className="mr-1" />
-          Pairwise
+          <QrCode size={14} className="mr-1" />
+          Invite
         </button>
       </div>
 
@@ -211,35 +208,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="p-3">
             <div className="card p-3 mb-3" style={{ backgroundColor: '#21262d', borderColor: '#30363d' }}>
               <div className="d-flex align-items-center mb-2">
-                <Shield size={18} className="text-success mr-2" />
-                <h6 className="mb-0 font-weight-bold">Pairwise Channel</h6>
+                <QrCode size={18} className="text-success mr-2" />
+                <h6 className="mb-0 font-weight-bold text-white">Invite a Contact</h6>
               </div>
               <p className="small text-muted mb-2">
-                SimpleX-inspired isolated queues. No permanent user IDs at the broker layer.
+                Share your invite link to start a private, end-to-end encrypted conversation.
               </p>
               <div
-                className="p-2 rounded font-monospace small mb-2 text-truncate text-success"
-                style={{ backgroundColor: '#0d1117', fontSize: '0.72rem' }}
+                className="p-2 rounded font-monospace small mb-3 text-truncate text-success"
+                style={{ backgroundColor: '#0d1117', fontSize: '0.75rem' }}
               >
-                sx://broker.simplexlink.net/q/{user.id.slice(0, 8)}
+                {inviteLink}
               </div>
               <button
                 type="button"
                 onClick={handleCopyInvite}
-                className="btn btn-sm btn-primary d-flex align-items-center justify-content-center"
+                className="btn btn-sm btn-success d-flex align-items-center justify-content-center"
               >
                 {copiedLink ? <Check size={14} className="mr-1" /> : <Copy size={14} className="mr-1" />}
-                {copiedLink ? 'Copied Link!' : 'Copy Pairwise Invite'}
+                {copiedLink ? 'Link copied!' : 'Copy invite link'}
               </button>
             </div>
 
             <div className="card p-3" style={{ backgroundColor: '#21262d', borderColor: '#30363d' }}>
               <div className="d-flex align-items-center mb-2">
-                <QrCode size={18} className="text-success mr-2" />
-                <h6 className="mb-0 font-weight-bold">Connection QR</h6>
+                <Shield size={18} className="text-success mr-2" />
+                <h6 className="mb-0 font-weight-bold text-white">Direct & Private</h6>
               </div>
               <p className="small text-muted mb-0">
-                Share your connection link with peers to verify safety numbers out-of-band and establish E2E ratchets.
+                You can chat directly without exchanging phone numbers, email addresses, or social accounts.
               </p>
             </div>
           </div>

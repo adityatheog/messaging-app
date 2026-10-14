@@ -37,20 +37,17 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   if (!selectedUser) {
     return (
       <div className="chat-window d-flex align-items-center justify-content-center p-4">
-        <div className="text-center" style={{ maxWidth: '420px' }}>
+        <div className="text-center" style={{ maxWidth: '380px' }}>
           <div
-            className="d-inline-flex align-items-center justify-content-center rounded-circle p-4 mb-3"
-            style={{ width: '80px', height: '80px', backgroundColor: '#161b22', border: '1px solid #30363d' }}
+            className="d-inline-flex align-items-center justify-content-center rounded-circle p-3 mb-3"
+            style={{ width: '64px', height: '64px', backgroundColor: '#161b22', border: '1px solid #30363d' }}
           >
-            <Shield size={38} className="text-success" />
+            <Shield size={30} className="text-success" />
           </div>
-          <h4 className="font-weight-bold text-white mb-2">SimpleLink Private Messaging</h4>
-          <p className="text-muted small">
-            Select a pairwise channel from the sidebar or use the Pairwise tab to exchange invitation links and QR codes.
+          <h5 className="font-weight-bold text-white mb-2">No chat selected</h5>
+          <p className="text-muted small mb-0">
+            Choose a conversation from the sidebar or start a new chat.
           </p>
-          <div className="badge-simplex d-inline-block">
-            Double-Ratchet E2EE · No Permanent IDs
-          </div>
         </div>
       </div>
     );
@@ -103,13 +100,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               <h6 className="font-weight-bold text-white mb-0 d-block text-truncate mr-2" style={{ maxWidth: '240px' }}>
                 {selectedUser.fullName || selectedUser.username}
               </h6>
-              <span className="badge-simplex" style={{ fontSize: '0.65rem', padding: '1px 5px' }}>
-                Verified E2EE
-              </span>
             </div>
             <small className="d-flex align-items-center text-muted" style={{ fontSize: '0.75rem' }}>
               <Lock size={10} className="text-success mr-1" />
-              <span>{selectedUser.isOnline ? 'Online · Pairwise Ratchet' : 'Offline · Pairwise Ratchet'}</span>
+              <span>{selectedUser.isOnline ? 'Online' : 'Offline'}</span>
             </small>
           </div>
         </div>
@@ -118,8 +112,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           <button
             type="button"
             className="btn btn-sm btn-link text-success p-2"
-            title="Start Encrypted Voice Call"
-            onClick={() => alert(`Initiating encrypted P2P audio call with ${selectedUser.fullName || selectedUser.username}...`)}
+            title="Start Voice Call"
+            onClick={() => alert(`Calling ${selectedUser.fullName || selectedUser.username}...`)}
           >
             <Phone size={18} />
           </button>
@@ -131,13 +125,13 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         {loadingMessages ? (
           <div className="d-flex justify-content-center align-items-center h-100 text-muted">
             <div className="spinner-border spinner-border-sm mr-2 text-success" role="status" />
-            Synchronizing encrypted messages...
+            Loading messages…
           </div>
         ) : messages.length === 0 ? (
           <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
             <Shield size={36} className="text-success mb-2 opacity-50" />
-            <p className="font-weight-bold mb-1 text-white">Encrypted Pairwise Channel Established</p>
-            <small className="text-muted">Send an encrypted text, voice note, or attachment below.</small>
+            <p className="font-weight-bold mb-1 text-white">No messages here yet</p>
+            <small className="text-muted">Say hello to start the conversation.</small>
           </div>
         ) : (
           <div>

@@ -29,10 +29,12 @@ export const PeopleList: React.FC<PeopleListProps> = ({
     return (
       <div className="p-4 text-center text-muted my-auto">
         <Users size={36} className="text-muted mb-2 opacity-50" />
-        <p className="mb-1 font-weight-bold">
-          {searchQuery ? 'No teammates found' : 'No users in directory'}
+        <p className="mb-1 font-weight-bold text-white">
+          {searchQuery ? 'No contacts found' : 'No contacts yet'}
         </p>
-        <small>{searchQuery ? 'Try a different search term' : 'Registered teammates will appear here'}</small>
+        <small className="text-muted">
+          {searchQuery ? 'Check the spelling or try a different search.' : 'People you connect with will appear here.'}
+        </small>
       </div>
     );
   }

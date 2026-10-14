@@ -76,8 +76,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           <div className="rounded p-2 mb-1 bg-black bg-opacity-25 d-flex align-items-center">
             <ImageIcon size={28} className="mr-2" />
             <div>
-              <div className="font-weight-bold small">{message.mediaName || 'Encrypted_Image.png'}</div>
-              <small style={{ opacity: 0.75 }}>E2EE Encrypted Payload</small>
+              <div className="font-weight-bold small">{message.mediaName || 'Photo.png'}</div>
+              <small style={{ opacity: 0.75 }}>Photo</small>
             </div>
           </div>
         )}
@@ -88,7 +88,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             <FileText size={28} className="mr-2" />
             <div>
               <div className="font-weight-bold small">{message.mediaName || 'Document.pdf'}</div>
-              <small style={{ opacity: 0.75 }}>1.2 MB · Verified Payload</small>
+              <small style={{ opacity: 0.75 }}>Document</small>
             </div>
           </div>
         )}

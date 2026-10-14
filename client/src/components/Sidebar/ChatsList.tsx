@@ -18,8 +18,8 @@ export const ChatsList: React.FC<ChatsListProps> = ({
     return (
       <div className="p-4 text-center text-muted my-auto">
         <MessageSquare size={36} className="text-muted mb-2 opacity-50" />
-        <p className="mb-1 font-weight-bold">No active chats</p>
-        <small>Switch to the People tab to start a conversation!</small>
+        <p className="mb-1 font-weight-bold text-white">No chats yet</p>
+        <small className="text-muted">Start a conversation when you're ready.</small>
       </div>
     );
   }

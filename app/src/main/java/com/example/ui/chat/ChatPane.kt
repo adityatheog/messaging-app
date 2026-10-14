@@ -139,14 +139,14 @@ fun ChatPane(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "SimpleLink Private Messaging",
+                    text = "No chat selected",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Select a conversation or connection to start chatting with pairwise E2E encryption.",
+                    text = "Choose a conversation from the list or start a new chat.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -251,17 +251,17 @@ fun ChatPane(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Lock,
-                            contentDescription = "E2EE",
+                            contentDescription = "Encrypted",
                             tint = Emerald400,
                             modifier = Modifier.size(11.dp)
                         )
                         Text(
                             text = when (target) {
-                                is ChatTarget.Direct -> if (target.user.isOnline) "Online · E2E Ratchet" else "Offline · E2E Ratchet"
-                                is ChatTarget.GroupChat -> "${target.group.memberIds.size} members · E2E Group"
+                                is ChatTarget.Direct -> if (target.user.isOnline) "Online" else "Offline"
+                                is ChatTarget.GroupChat -> "${target.group.memberIds.size} members"
                             },
                             style = MaterialTheme.typography.labelSmall,
-                            color = Emerald400,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 11.sp
                         )
                     }
@@ -317,19 +317,20 @@ fun ChatPane(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = Icons.Default.Lock,
-                            contentDescription = "E2E Encrypted Channel",
-                            tint = Emerald500.copy(alpha = 0.5f),
-                            modifier = Modifier.size(36.dp)
+                            contentDescription = "Encrypted conversation",
+                            tint = Emerald500.copy(alpha = 0.6f),
+                            modifier = Modifier.size(32.dp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "End-to-End Encrypted Channel",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
+                            text = "No messages here yet",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Messages and attachments are encrypted directly between devices.",
+                            text = "Send a message to start the conversation.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

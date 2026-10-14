@@ -82,13 +82,13 @@ fun GroupsPane(
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "No private groups yet",
+                        text = "No groups yet",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Create an end-to-end encrypted group to chat with multiple peers.",
+                        text = "Create a group to message multiple people together.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

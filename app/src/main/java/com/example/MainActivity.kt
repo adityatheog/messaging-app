@@ -111,6 +111,9 @@ fun AppContent(
     } else {
         if (showRegister) {
             RegisterScreen(
+                onCreatePrivacyIdentity = {
+                    authViewModel.createPrivacyIdentity()
+                },
                 onRegisterClick = { u, p, fn ->
                     authViewModel.register(u, p, fn)
                 },
@@ -129,9 +132,6 @@ fun AppContent(
                 },
                 onLoginClick = { u, p ->
                     authViewModel.login(u, p)
-                },
-                onQuickLogin = { u ->
-                    authViewModel.quickLoginDemo(u)
                 },
                 onNavigateToRegister = {
                     authViewModel.clearError()

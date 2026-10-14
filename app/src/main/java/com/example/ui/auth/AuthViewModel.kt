@@ -76,10 +76,6 @@ class AuthViewModel(private val repository: MessageRepository) : ViewModel() {
         }
     }
 
-    fun quickLoginDemo(username: String) {
-        login(username, "password123")
-    }
-
     fun createPrivacyIdentity(displayName: String? = null, recoveryPassphrase: String? = null) {
         viewModelScope.launch {
             _isLoading.value = true

@@ -23,11 +23,11 @@ const MainRouting: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center bg-page">
-        <div className="spinner-border text-primary mb-3" style={{ width: '3rem', height: '3rem' }} role="status">
+      <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center" style={{ backgroundColor: '#0d1117' }}>
+        <div className="spinner-border text-success mb-3" style={{ width: '2.5rem', height: '2.5rem' }} role="status">
           <span className="sr-only">Loading...</span>
         </div>
-        <p className="text-muted font-weight-600">Loading Messaging App...</p>
+        <p className="text-muted small">Connecting…</p>
       </div>
     );
   }

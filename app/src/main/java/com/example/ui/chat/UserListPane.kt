@@ -130,10 +130,10 @@ fun UserListPane(
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
                                 Text(
-                                    text = "E2EE · Pairwise",
+                                    text = "Encrypted",
                                     color = Emerald500,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.SemiBold
                                 )
                             }
                         }
@@ -262,7 +262,7 @@ fun UserListPane(
                         onValueChange = onSearchChange,
                         placeholder = {
                             Text(
-                                text = "Search chats or safety numbers...",
+                                text = "Search chats...",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             )
@@ -320,7 +320,7 @@ fun UserListPane(
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = if (searchQuery.isNotEmpty()) "No contacts found" else "No active conversations",
+                                text = if (searchQuery.isNotEmpty()) "No results found" else "No chats yet. Start a conversation when you're ready.",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -442,7 +442,7 @@ private fun UserRowItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = lastMsg?.content ?: "@${user.username} · Pairwise Queue",
+                    text = lastMsg?.content ?: "@${user.username}",
                     style = MaterialTheme.typography.bodySmall,
                     color = if (item.unreadCount > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = if (item.unreadCount > 0) FontWeight.SemiBold else FontWeight.Normal,

@@ -359,18 +359,18 @@ export const ChatApp: React.FC = () => {
       {/* Offline / Reconnecting Banner */}
       {(!isConnected || isReconnecting) && (
         <div
-          className="bg-warning text-white py-2 px-3 text-center small font-weight-bold d-flex align-items-center justify-content-center shadow-sm"
-          style={{ zIndex: 1040 }}
+          className="bg-warning text-dark py-2 px-3 text-center small font-weight-bold d-flex align-items-center justify-content-center shadow-sm"
+          style={{ zIndex: 1040, backgroundColor: '#d29922' }}
         >
           {isReconnecting ? (
             <>
               <RefreshCw size={14} className="mr-2 spinner-border spinner-border-sm border-0" />
-              Reconnecting to real-time service...
+              Connecting…
             </>
           ) : (
             <>
               <WifiOff size={14} className="mr-2" />
-              Offline mode — pending messages will be sent automatically when reconnected
+              You're offline. We'll reconnect when we can.
             </>
           )}
         </div>

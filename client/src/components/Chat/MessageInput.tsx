@@ -72,21 +72,6 @@ export const MessageInput: React.FC<MessageInputProps> = ({
 
   return (
     <div className="p-3 border-top" style={{ backgroundColor: '#161b22', borderColor: '#30363d' }}>
-      {/* Quick response chips */}
-      <div className="d-flex flex-wrap mb-2">
-        {['Safety numbers verified ✅', 'Reviewing protocol spec', 'Voice call online 📞'].map((chip) => (
-          <button
-            key={chip}
-            type="button"
-            onClick={() => setText(chip)}
-            className="btn btn-sm mr-2 mb-1 py-1 px-2 text-muted"
-            style={{ fontSize: '0.75rem', backgroundColor: '#21262d', border: '1px solid #30363d' }}
-          >
-            {chip}
-          </button>
-        ))}
-      </div>
-
       <form onSubmit={handleSubmit} className="d-flex align-items-center position-relative">
         {/* Attachment menu trigger */}
         <div className="position-relative mr-2">
@@ -94,7 +79,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             type="button"
             onClick={() => setShowAttachMenu(!showAttachMenu)}
             className="btn btn-sm btn-link text-muted p-2"
-            title="Attach Media or File"
+            title="Attach file"
           >
             <Paperclip size={18} />
           </button>
@@ -134,11 +119,19 @@ export const MessageInput: React.FC<MessageInputProps> = ({
         <input
           type="text"
           className="form-control mr-2"
-          placeholder="Type an end-to-end encrypted message..."
+          placeholder="Write a message..."
           value={text}
           onChange={handleTextChange}
           disabled={disabled || sending}
           autoComplete="off"
+          style={{
+            backgroundColor: '#0d1117',
+            borderColor: '#30363d',
+            color: '#f0f6fc',
+            borderRadius: '20px',
+            paddingLeft: '16px',
+            paddingRight: '16px'
+          }}
         />
 
         {text.trim() ? (
