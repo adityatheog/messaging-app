@@ -58,7 +58,8 @@ class JsonStore extends Store {
 
   async seedInitialDataIfNeeded() {
     if (this.memUsers.length === 0) {
-      const defaultPassword = 'password123';
+      // SECURITY FIX: Generate secure random passwords instead of hardcoding 'password123'
+      const defaultPassword = require('crypto').randomBytes(16).toString('hex');
       const hashedPassword = bcrypt.hashSync(defaultPassword, 10);
       const now = new Date().toISOString();
 
