@@ -65,6 +65,21 @@ describe('Messaging App REST API Contract Tests', () => {
     expect(res.body.some((u) => u.id === userId)).toBe(false);
   });
 
+  test('PATCH /api/auth/profile updates user profile', async () => {
+    const res = await request(app)
+      .patch('/api/auth/profile')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        fullName: 'Updated Name',
+        avatarColor: '#ff0000'
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe('Profile updated');
+    expect(res.body.user.fullName).toBe('Updated Name');
+    expect(res.body.user.avatarColor).toBe('#ff0000');
+  });
+
   test('POST /api/messages sends a message to another user', async () => {
     const res = await request(app)
       .post('/api/messages')
