@@ -50,6 +50,10 @@ const getPort = () => {
 };
 
 const getJwtSecret = () => {
+  if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+    // SECURITY: Prevent hardcoded secret fallback in production to avoid forged JWTs
+    throw new Error('FATAL: JWT_SECRET environment variable is not set in production.');
+  }
   return process.env.JWT_SECRET || DEFAULT_JWT_SECRET;
 };
 
