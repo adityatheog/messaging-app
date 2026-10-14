@@ -1,0 +1,18 @@
+{
+  "name": "messaging-app",
+  "version": "1.0.0",
+  "description": "Production-Ready Cross-Platform Real-Time Messaging App (Argon UI)",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "node server/src/index.js",
+    "start": "node server/src/index.js",
+    "build": "npm run build --workspace=client",
+    "build:client": "npm run build --workspace=client",
+    "test": "npm run test --workspace=server",
+    "install:all": "npm install --workspace=server && npm install --workspace=client"
+  }
+}

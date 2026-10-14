@@ -19,6 +19,7 @@ backend/data/*.json
 
 # Logs
 *.log
+*-debug.log
 npm-debug.log*
 logs/
 

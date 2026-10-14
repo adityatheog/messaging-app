@@ -1,0 +1,113 @@
+[
+  {
+    "id": "msg-seed-1",
+    "senderId": "user-sarah",
+    "receiverId": "user-alex",
+    "content": "Hey Alex! Have you reviewed the Argon UI theme specs?",
+    "timestamp": "2026-10-13T23:06:39.672Z",
+    "read": true
+  },
+  {
+    "id": "msg-seed-2",
+    "senderId": "user-alex",
+    "receiverId": "user-sarah",
+    "content": "Yes! The cards, gradients, and soft shadow buttons look amazing.",
+    "timestamp": "2026-10-13T23:26:39.672Z",
+    "read": true
+  },
+  {
+    "id": "msg-seed-3",
+    "senderId": "user-sarah",
+    "receiverId": "user-alex",
+    "content": "Awesome. Ready for Phase 1 verification.",
+    "timestamp": "2026-10-13T23:56:39.672Z",
+    "read": true
+  },
+  {
+    "id": "8ea8e013-975b-4ee5-bf6e-bb333dfad7cd",
+    "clientMsgId": null,
+    "senderId": "5cbab724-cf35-4031-9a7e-d59a9cc66c71",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T00:06:39.943Z",
+    "read": false
+  },
+  {
+    "id": "98f65cdd-d7b1-4ae0-9fc5-7ee14c6a40a5",
+    "clientMsgId": null,
+    "senderId": "9b698125-074e-41cc-b8a3-29c8583cf5e6",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T00:07:29.633Z",
+    "read": false
+  },
+  {
+    "id": "0adb3f74-411f-4bfb-a0d5-527c0c031813",
+    "clientMsgId": null,
+    "senderId": "8a0d133a-3db1-467e-a728-f062747532f4",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T00:19:34.943Z",
+    "read": false
+  },
+  {
+    "id": "9b63cb71-4327-4ef6-93a2-a7421cecba84",
+    "clientMsgId": null,
+    "senderId": "9171e7c6-e719-487a-95bf-486d8f6d3ff5",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T00:19:52.597Z",
+    "read": false
+  },
+  {
+    "id": "a957cf9b-fc95-49c3-b79a-38d0df69ea22",
+    "clientMsgId": null,
+    "senderId": "a5f89bdd-9249-4aa5-a19e-64838c91a298",
+    "receiverId": "user-sarah",
+    "content": "Hello Sarah from supertest suite!",
+    "timestamp": "2026-10-14T00:20:11.440Z",
+    "read": false
+  },
+  {
+    "id": "cid-1791937212547",
+    "clientMsgId": "cid-1791937212547",
+    "senderId": "530a3eec-56ad-40f4-9a0d-365c6e4d90ef",
+    "receiverId": "5f72400d-de31-472b-baf2-3fd69f645a97",
+    "content": "Realtime test message from Alice",
+    "timestamp": "2026-10-14T00:20:12.550Z",
+    "read": false
+  },
+  {
+    "id": "unique-idempotent-1791937212563",
+    "clientMsgId": "unique-idempotent-1791937212563",
+    "senderId": "530a3eec-56ad-40f4-9a0d-365c6e4d90ef",
+    "receiverId": "5f72400d-de31-472b-baf2-3fd69f645a97",
+    "content": "Idempotency test payload",
+    "timestamp": "2026-10-14T00:20:12.585Z",
+    "read": false
+  },
+  {
+    "id": "p1-1791937212632",
+    "senderId": "530a3eec-56ad-40f4-9a0d-365c6e4d90ef",
+    "receiverId": "5f72400d-de31-472b-baf2-3fd69f645a97",
+    "content": "Page msg 1",
+    "timestamp": "2026-10-14T00:20:09.632Z",
+    "read": false
+  },
+  {
+    "id": "p2-1791937212635",
+    "senderId": "530a3eec-56ad-40f4-9a0d-365c6e4d90ef",
+    "receiverId": "5f72400d-de31-472b-baf2-3fd69f645a97",
+    "content": "Page msg 2",
+    "timestamp": "2026-10-14T00:20:10.635Z",
+    "read": false
+  },
+  {
+    "id": "p3-1791937212637",
+    "senderId": "530a3eec-56ad-40f4-9a0d-365c6e4d90ef",
+    "receiverId": "5f72400d-de31-472b-baf2-3fd69f645a97",
+    "content": "Page msg 3",
+    "timestamp": "2026-10-14T00:20:11.637Z",
+    "read": false
+  }
+]

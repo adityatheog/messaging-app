@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with display name, username, and online presence state",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique user identifier matching auth.uid"
+        },
+        "username": {
+          "type": "string",
+          "description": "Unique handle between 3 and 30 characters"
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Full name of the user"
+        },
+        "isOnline": {
+          "type": "boolean",
+          "description": "Whether user is currently online"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of account creation"
+        },
+        "lastSeen": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last activity"
+        }
+      },
+      "required": ["id", "username", "fullName", "isOnline", "createdAt"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "A direct message sent between two users",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique message identifier"
+        },
+        "senderId": {
+          "type": "string",
+          "description": "User ID of the sender matching auth.uid"
+        },
+        "receiverId": {
+          "type": "string",
+          "description": "User ID of the recipient"
+        },
+        "content": {
+          "type": "string",
+          "description": "Message text between 1 and 5000 characters"
+        },
+        "read": {
+          "type": "boolean",
+          "description": "Whether the recipient has read the message"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when message was created"
+        }
+      },
+      "required": ["id", "senderId", "receiverId", "content", "read", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Registered user directory and profile states"
+    },
+    "/messages/{messageId}": {
+      "schema": {
+        "$ref": "#/entities/ChatMessage"
+      },
+      "description": "Direct conversation messages between authenticated participants"
+    }
+  }
+}

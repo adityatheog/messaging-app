@@ -1,0 +1,230 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+// --- Argon Theme Variables ---
+$primary: #5e72e4;
+$secondary: #f4f5f7;
+$success: #2dce89;
+$info: #11cdef;
+$warning: #fb6340;
+$danger: #f5365c;
+$default: #172b4d;
+$page-bg: #f8f9fe;
+$body-text: #525f7f;
+$heading-color: #32325d;
+$primary-gradient: linear-gradient(87deg, #5e72e4 0, #825ee4 100%);
+$card-radius: 0.375rem;
+$card-shadow: 0 0 2rem rgba(136, 152, 170, 0.15);
+
+// --- Base Typography & Reset ---
+body {
+  font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: $page-bg;
+  color: $body-text;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $heading-color;
+  font-weight: 600;
+}
+
+// --- Argon Card Styles ---
+.card {
+  border: 0;
+  border-radius: $card-radius;
+  box-shadow: $card-shadow;
+  background-color: #fff;
+  transition: all 0.15s ease;
+}
+
+// --- Argon Button Styles ---
+.btn {
+  font-weight: 600;
+  border-radius: 0.375rem;
+  letter-spacing: 0.025em;
+  text-transform: none;
+  padding: 0.625rem 1.25rem;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.15s ease;
+  min-height: 44px;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.btn-primary {
+  background: $primary-gradient !important;
+  border-color: $primary !important;
+  color: #fff !important;
+}
+
+.btn-secondary {
+  background-color: #fff !important;
+  border-color: rgba(0, 0, 0, 0.05) !important;
+  color: $primary !important;
+}
+
+.btn-white {
+  background: #fff;
+  color: $primary;
+}
+
+// --- Argon Alternative Input Styles ---
+.input-group-alternative {
+  border: 0;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 3px rgba(50, 50, 93, 0.15), 0 1px 0 rgba(0, 0, 0, 0.02);
+  background-color: #fff;
+  overflow: hidden;
+  transition: box-shadow 0.15s ease;
+
+  .input-group-text {
+    border: 0;
+    background-color: transparent;
+    color: #adb5bd;
+    padding-left: 1rem;
+  }
+
+  .form-control {
+    border: 0;
+    box-shadow: none;
+    color: $heading-color;
+    height: calc(2.75rem + 2px);
+    padding-left: 0.75rem;
+
+    &::placeholder {
+      color: #adb5bd;
+    }
+  }
+
+  &:focus-within {
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// --- Gradients & Backgrounds ---
+.bg-gradient-primary {
+  background: $primary-gradient !important;
+}
+
+.bg-default {
+  background-color: $default !important;
+}
+
+.bg-page {
+  background-color: $page-bg !important;
+}
+
+// --- Avatars ---
+.avatar-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+
+  &.online {
+    background-color: $success;
+  }
+
+  &.offline {
+    background-color: #adb5bd;
+  }
+}
+
+// --- Message Bubbles ---
+.message-bubble-outgoing {
+  background: $primary-gradient;
+  color: #fff;
+  border-radius: 1rem 1rem 0.25rem 1rem;
+  padding: 0.75rem 1rem;
+  max-width: 80%;
+  word-wrap: break-word;
+  box-shadow: 0 2px 4px rgba(94, 114, 228, 0.25);
+
+  .message-time {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.75rem;
+  }
+}
+
+.message-bubble-incoming {
+  background: #fff;
+  color: $body-text;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  padding: 0.75rem 1rem;
+  max-width: 80%;
+  word-wrap: break-word;
+  box-shadow: 0 1px 3px rgba(50, 50, 93, 0.08);
+
+  .message-time {
+    color: #8898aa;
+    font-size: 0.75rem;
+  }
+}
+
+// --- App Layouts ---
+.app-container {
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  background-color: $page-bg;
+}
+
+.sidebar-pane {
+  width: 340px;
+  flex-shrink: 0;
+  background-color: #fff;
+  border-right: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: $page-bg;
+}
+
+// --- Mobile Responsiveness (< 768px) ---
+@media (max-width: 767.98px) {
+  .sidebar-pane {
+    width: 100%;
+  }
+
+  .mobile-hidden {
+    display: none !important;
+  }
+}
+
+// Safe area paddings for mobile
+.safe-top {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+.safe-bottom {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
