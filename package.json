@@ -1,0 +1,25 @@
+{
+  "name": "messaging-app",
+  "version": "1.0.0",
+  "description": "SimpleLink privacy-focused messaging platform",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "node server/src/index.js",
+    "start": "node server/src/index.js",
+    "build": "npm run build --workspace=client",
+    "build:client": "npm run build --workspace=client",
+    "test": "npm run test --workspace=server",
+    "install:all": "npm install",
+    "migrate": "node server/src/scripts/migrateJsonToSqlite.js",
+    "db:backup": "node server/src/scripts/dbBackup.js backup",
+    "db:restore": "node server/src/scripts/dbBackup.js restore"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}

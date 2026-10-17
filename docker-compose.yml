@@ -1,0 +1,20 @@
+services:
+  messaging-app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in .env or environment}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173,http://localhost:3000,https://localhost,http://localhost}
+      - STORAGE_BACKEND=sqlite
+      - DATA_DIR=/app/server/data
+      - SQLITE_DB_PATH=/app/server/data/simplelink.db
+      - UPLOADS_DIR=/app/server/data/uploads
+    volumes:
+      - app-data:/app/server/data
+    restart: unless-stopped
+
+volumes:
+  app-data:
